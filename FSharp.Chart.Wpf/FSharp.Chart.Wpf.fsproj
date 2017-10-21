@@ -14,5 +14,10 @@
   <ItemGroup>
     <ProjectReference Include="..\FSharp.Chart\FSharp.Chart.fsproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

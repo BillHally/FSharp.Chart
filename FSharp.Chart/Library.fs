@@ -1,16 +1,18 @@
 namespace FSharp.Chart
 
 open System
+open System.Drawing
 
-type ChartData =
-    | CDFloat    of float[]
-    | CDInt      of int[]
-    | CDDateTime of DateTime[]
-    | CDTimeSpan of TimeSpan[]
+type SeriesData =
+    | FloatSeries    of float    []
+    | DateTimeSeries of DateTime []
+    | TimeSpanSeries of TimeSpan []
 
-type AxisDirection =
-    | Horizontal
-    | Vertical
+type AxisPosition =
+    | Left
+    | Right
+    | Bottom
+    | Top
 
 type FontStyle =
     | Normal
@@ -19,27 +21,105 @@ type FontStyle =
 
 type Font =
     {
-        Name : string
-        Size : int
+        Name  : string
+        Size  : int
         Style : FontStyle
     }
 
-type Title =
+    static member Default =
+        {
+            Name  = ""
+            Size  = 0
+            Style = Normal
+        }
+
+type Text =
     {
-        Title : string
-        Font : Font
+        Value : string
+        Font  : Font
+        Color : Color
     }
+
+    static member Default =
+        {
+            Value = ""
+            Font  = Font.Default
+            Color = Color.Black
+        }
+
+type AxisType =
+    | Linear
+    | Categorical
 
 type Axis =
     {
-        AxisDirection : AxisDirection
-        Title : Title
+        AxisPosition : AxisPosition
+        Title        : Text
+        TitleColor   : Color
+        TextColor    : Color
+        AxisType     : AxisType
     }
+
+    static member DefaultX =
+        {
+            AxisPosition = Bottom
+            Title        = Text.Default
+            TitleColor   = Color.Black
+            TextColor    = Color.Black
+            AxisType     = Linear
+        }
+
+    static member DefaultY =
+        {
+            AxisPosition = Left
+            Title        = Text.Default
+            TitleColor   = Color.Black
+            TextColor    = Color.Black
+            AxisType     = Linear
+        }
+
+type SeriesType =
+    | Bar
+    | BoxPlot
+    | Column of width : float
+    | ErrorColumn
+    | Scatter
+
+type Series =
+    {
+        SeriesData : SeriesData
+        SeriesType : SeriesType
+        Color      : Color
+        XAxisIndex : int
+        YAxisIndex : int
+    }
+
+    static member Default =
+        {
+            SeriesData = FloatSeries [||]
+            SeriesType = Scatter
+            Color      = Color.Blue
+            XAxisIndex = 0
+            YAxisIndex = 0
+        }
 
 type Chart =
     {
-        Title : Title
+        Title    : Text
+        Subtitle : Text
 
-        Axes : Axis[]
+        XAxes : Axis[]
+        YAxes : Axis[]
+
+        Series : Series[]
     }
-        
+
+    static member Default =
+        {
+            Title    = Text.Default
+            Subtitle = Text.Default
+
+            XAxes  = [||]
+            YAxes  = [||]
+            Series = [||]
+        }

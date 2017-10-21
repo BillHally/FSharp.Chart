@@ -1,35 +1,12 @@
-﻿namespace FSharp.Chart.OxyPlot.Wpf
+﻿module FSharp.Chart.OxyPlot.Wpf.Chart
 
 open System
 
-open OxyPlot
+open OxyPlot.Wpf
 
 open FSharp.Chart
+open FSharp.Chart.OxyPlot
 
-
-module Chart =
-    let plot (chart : Chart) (data : ChartData) =
-        printfn "plotting: %A %A" chart data
-
-    let foo () =
-        let data = CDFloat [| 1.0..10.0 |]
-
-        let chart =
-            {
-                Title = { Title = "A chart"; Font = { Name = "Segoe UI"; Size = 15; Style = FontStyle.Normal } }
-
-                Axes =
-                    [|
-                        {
-                            Title = { Title = "X axis"; Font = { Name = "Segoe UI"; Size = 15; Style = FontStyle.Normal } }
-                            AxisDirection = AxisDirection.Horizontal
-                        }
-                            
-                        {
-                            Title = { Title = "Y axis"; Font = { Name = "Segoe UI"; Size = 15; Style = FontStyle.Normal } }
-                            AxisDirection = AxisDirection.Vertical
-                        }
-                    |]
-            }
-
-        plot chart data
+let plot (chart : Chart) =
+    let plotModel = PlotModel.from chart
+    System.Windows.Window(Content = PlotView(Model = plotModel)).ShowDialog() |> ignore
