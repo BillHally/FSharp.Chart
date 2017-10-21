@@ -5,6 +5,7 @@
     <TargetFramework>net471</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="FSharp.Chart.OxyPlot.fs" />
     <Compile Include="FSharp.Chart.OxyPlot.Wpf.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
