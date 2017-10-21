@@ -1,0 +1,16 @@
+RESTRICTION: >= net461
+NUGET
+  remote: https://www.nuget.org/api/v2
+    FAKE (4.63.2)
+    FSharp.Compiler.Tools (4.1.27)
+    FSharp.Core (4.2.3)
+    FSharp.NET.Sdk (1.0.5)
+      FSharp.Compiler.Tools (>= 4.1.17)
+    Microsoft.NETCore.Platforms (2.0)
+    NETStandard.Library (2.0.1)
+      Microsoft.NETCore.Platforms (>= 1.1)
+    OxyPlot.Core (2.0.0-unstable1013)
+      NETStandard.Library (>= 1.6.1)
+    OxyPlot.Wpf (2.0.0-unstable1013)
+      OxyPlot.Core (2.0.0-unstable1013)
+    System.ValueTuple (4.3.1) - restriction: >= net471

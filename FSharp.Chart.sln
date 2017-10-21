@@ -1,0 +1,36 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27009.1
+MinimumVisualStudioVersion = 15.0.26124.0
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{DD4D1A85-BC37-4E2B-A140-BBD1FA346DC2}"
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+		paket.lock = paket.lock
+	EndProjectSection
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Chart", "FSharp.Chart\FSharp.Chart.fsproj", "{9BACD6E4-E325-495C-B505-4C643BCB9029}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Chart.Wpf", "FSharp.Chart.Wpf\FSharp.Chart.Wpf.fsproj", "{022DA5C6-FF25-4E3C-8F30-91E1C8201FC1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9BACD6E4-E325-495C-B505-4C643BCB9029}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BACD6E4-E325-495C-B505-4C643BCB9029}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BACD6E4-E325-495C-B505-4C643BCB9029}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BACD6E4-E325-495C-B505-4C643BCB9029}.Release|Any CPU.Build.0 = Release|Any CPU
+		{022DA5C6-FF25-4E3C-8F30-91E1C8201FC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{022DA5C6-FF25-4E3C-8F30-91E1C8201FC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{022DA5C6-FF25-4E3C-8F30-91E1C8201FC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{022DA5C6-FF25-4E3C-8F30-91E1C8201FC1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6731DC51-3E3B-4FF3-AF9F-3A31FFA8DC02}
+	EndGlobalSection
+EndGlobal

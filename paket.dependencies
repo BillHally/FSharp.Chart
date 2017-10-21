@@ -1,0 +1,8 @@
+source https://www.nuget.org/api/v2
+
+framework: >= net461
+nuget FAKE
+nuget FSharp.Core
+nuget FSharp.NET.Sdk
+nuget OxyPlot.Wpf 2.0.0-unstable1013 unstable
+nuget System.ValueTuple 4.3.1 restriction: >= net471
