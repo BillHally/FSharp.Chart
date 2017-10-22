@@ -10,7 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{DD4D1A
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Chart", "FSharp.Chart\FSharp.Chart.fsproj", "{9BACD6E4-E325-495C-B505-4C643BCB9029}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Chart.Wpf", "FSharp.Chart.Wpf\FSharp.Chart.Wpf.fsproj", "{022DA5C6-FF25-4E3C-8F30-91E1C8201FC1}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Chart.OxyPlot.Wpf", "FSharp.Chart.OxyPlot.Wpf\FSharp.Chart.OxyPlot.Wpf.fsproj", "{022DA5C6-FF25-4E3C-8F30-91E1C8201FC1}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Chart.OxyPlot", "FSharp.Chart.OxyPlot\FSharp.Chart.OxyPlot.fsproj", "{EB278903-7AE1-41C4-B2E9-90AED8D78A2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +28,10 @@ Global
 		{022DA5C6-FF25-4E3C-8F30-91E1C8201FC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{022DA5C6-FF25-4E3C-8F30-91E1C8201FC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{022DA5C6-FF25-4E3C-8F30-91E1C8201FC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB278903-7AE1-41C4-B2E9-90AED8D78A2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB278903-7AE1-41C4-B2E9-90AED8D78A2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB278903-7AE1-41C4-B2E9-90AED8D78A2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB278903-7AE1-41C4-B2E9-90AED8D78A2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

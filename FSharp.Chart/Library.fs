@@ -98,7 +98,7 @@ type Series =
         {
             SeriesData = FloatSeries [||]
             SeriesType = Scatter
-            Color      = Color.Blue
+            Color      = Color.Black
             XAxisIndex = 0
             YAxisIndex = 0
         }
@@ -108,10 +108,10 @@ type Chart =
         Title    : Text
         Subtitle : Text
 
-        XAxes : Axis[]
-        YAxes : Axis[]
+        XAxes : Axis []
+        YAxes : Axis []
 
-        Series : Series[]
+        Series : Series []
     }
 
     static member Default =

@@ -2,7 +2,6 @@
 
 open System
 open System.Drawing
-open System.Windows.Controls
 
 open OxyPlot
 

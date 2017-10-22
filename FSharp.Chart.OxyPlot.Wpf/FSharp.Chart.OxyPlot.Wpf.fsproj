@@ -5,8 +5,7 @@
     <TargetFramework>net471</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="FSharp.Chart.OxyPlot.fs" />
-    <Compile Include="FSharp.Chart.OxyPlot.Wpf.fs" />
+    <Compile Include="OxyPlot.Wpf.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -14,6 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FSharp.Chart\FSharp.Chart.fsproj" />
+    <ProjectReference Include="..\FSharp.Chart.OxyPlot\FSharp.Chart.OxyPlot.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
