@@ -3,10 +3,14 @@ namespace FSharp.Chart
 open System
 open System.Drawing
 
-type SeriesData =
+type Data1D =
     | FloatSeries    of float    []
     | DateTimeSeries of DateTime []
     | TimeSpanSeries of TimeSpan []
+
+type SeriesData =
+    | Data1D of Data1D
+    | Data2D of Data1D * Data1D
 
 type AxisPosition =
     | Left
@@ -48,8 +52,10 @@ type Text =
         }
 
 type AxisType =
-    | Linear
     | Categorical
+    | DateTime
+    | Linear
+    | TimeSpan
 
 type Axis =
     {
@@ -96,11 +102,11 @@ type Series =
 
     static member Default =
         {
-            SeriesData = FloatSeries [||]
+            SeriesData = Data1D (FloatSeries [||])
             SeriesType = Scatter
             Color      = Color.Black
-            XAxisIndex = 0
-            YAxisIndex = 0
+            XAxisIndex = -1
+            YAxisIndex = -1
         }
 
 type Chart =

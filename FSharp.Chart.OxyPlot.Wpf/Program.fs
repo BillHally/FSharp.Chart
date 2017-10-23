@@ -5,7 +5,7 @@ open System.Drawing
 
 open FSharp.Chart
 
-let foo () =
+let doubleSeriesExample () =
     let text x = { Text.Default with Value = x }
 
     {
@@ -38,14 +38,14 @@ let foo () =
             [|
                 {
                     Series.Default with
-                        SeriesData = FloatSeries [| 1.0..10.0 |]
+                        SeriesData = Data1D (FloatSeries [| 1.0..10.0 |])
                         SeriesType = Column 3.0
                         Color      = Color.Blue
                 }
 
                 {
                     Series.Default with
-                        SeriesData = FloatSeries [| 2.5..5.0..97.5 |]
+                        SeriesData = Data1D (FloatSeries [| 2.5..5.0..97.5 |])
                         SeriesType = Scatter
                         Color      = Color.Red
                         XAxisIndex = 1
@@ -54,8 +54,38 @@ let foo () =
     }
     |> FSharp.Chart.OxyPlot.Wpf.Chart.plot
 
+let dateTimeTimeSpanExample () =
+    let text x = { Text.Default with Value = x }
+
+    {
+        Chart.Default with
+            Title = text "DateTime vs. TimeSpan"
+
+            XAxes = [| { Axis.DefaultX with Title = text "X axis"; AxisType = AxisType.DateTime } |]
+            YAxes = [| { Axis.DefaultY with Title = text "Y axis"; AxisType = AxisType.TimeSpan } |]
+
+            Series =
+                [|
+                    {
+                        Series.Default with
+                            SeriesData =
+                                Data2D
+                                    (
+                                        (DateTimeSeries ([| 1  ..10   |] |> Array.map (fun x -> System.DateTime(2017, 10, x)))),
+                                        (TimeSpanSeries ([| 1.0..10.0 |] |> Array.map TimeSpan.FromMinutes))
+                                    )
+                            SeriesType = Scatter
+                            Color      = Color.Blue
+                            XAxisIndex = 0
+                            YAxisIndex = 0
+                    }
+                |]
+    }
+    |> FSharp.Chart.OxyPlot.Wpf.Chart.plot
+
 [<STAThread>]
 [<EntryPoint>]
 let main argv =
-    foo ()
+    //doubleSeriesExample ()
+    dateTimeTimeSpanExample ()
     0
