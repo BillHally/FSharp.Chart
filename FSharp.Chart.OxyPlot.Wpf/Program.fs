@@ -38,14 +38,14 @@ let doubleSeriesExample () =
             [|
                 {
                     Series.Default with
-                        SeriesData = Data1D (FloatSeries [| 1.0..10.0 |])
+                        SeriesData = SeriesData [| 1.0..10.0 |]
                         SeriesType = Column 3.0
                         Color      = Color.Blue
                 }
 
                 {
                     Series.Default with
-                        SeriesData = Data1D (FloatSeries [| 2.5..5.0..97.5 |])
+                        SeriesData = SeriesData [| 2.5..5.0..97.5 |]
                         SeriesType = Scatter
                         Color      = Color.Red
                         XAxisIndex = 1
@@ -69,10 +69,10 @@ let dateTimeTimeSpanExample () =
                     {
                         Series.Default with
                             SeriesData =
-                                Data2D
+                                SeriesData
                                     (
-                                        (DateTimeSeries ([| 1  ..10   |] |> Array.map (fun x -> System.DateTime(2017, 10, x)))),
-                                        (TimeSpanSeries ([| 1.0..10.0 |] |> Array.map TimeSpan.FromMinutes))
+                                        ([| 1  ..10   |] |> Array.map (fun x -> System.DateTime(2017, 10, x))),
+                                        ([| 1.0..10.0 |] |> Array.map TimeSpan.FromMinutes)
                                     )
                             SeriesType = Scatter
                             Color      = Color.Blue

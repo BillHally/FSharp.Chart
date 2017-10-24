@@ -61,17 +61,28 @@ module Axis =
 module Series =
     let private toFloats =
         function
-        | FloatSeries    xs -> xs
-        | DateTimeSeries xs -> xs |> Array.map Axes.DateTimeAxis.ToDouble
-        | TimeSpanSeries xs -> xs |> Array.map Axes.TimeSpanAxis.ToDouble
+        | FloatData    xs -> xs
+        | DateTimeData xs -> xs |> Array.map Axes.DateTimeAxis.ToDouble
+        | TimeSpanData xs -> xs |> Array.map Axes.TimeSpanAxis.ToDouble
 
     let private toDataPoints =
         function
-        | Data1D      ys  -> ys |> toFloats |> Array.mapi (fun i y -> OxyPlot.DataPoint(float i, y))
-        | Data2D (xs, ys) ->
+        | Data1D        ys  -> ys |> toFloats |> Array.mapi (fun i y -> OxyPlot.DataPoint(float i, y))
+        | Data1x1D (xs, ys) ->
             let xs = xs |> toFloats
             let ys = ys |> toFloats
             xs |> Array.mapi (fun i x -> OxyPlot.DataPoint(x, ys.[i]))
+        | Data2D xys ->
+            match xys with
+            | FloatFloat       xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(                           x,                            y))
+            | FloatDateTime    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(                           x, Axes.DateTimeAxis.ToDouble y)) 
+            | FloatTimeSpan    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(                           x, Axes.TimeSpanAxis.ToDouble y)) 
+            | DateTimeFloat    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.DateTimeAxis.ToDouble x,                            y)) 
+            | DateTimeDateTime xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.DateTimeAxis.ToDouble x, Axes.DateTimeAxis.ToDouble y)) 
+            | DateTimeTimeSpan xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.DateTimeAxis.ToDouble x, Axes.TimeSpanAxis.ToDouble y)) 
+            | TimeSpanFloat    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.TimeSpanAxis.ToDouble x,                            y)) 
+            | TimeSpanDateTime xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.TimeSpanAxis.ToDouble x, Axes.DateTimeAxis.ToDouble y)) 
+            | TimeSpanTimeSpan xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.TimeSpanAxis.ToDouble x, Axes.TimeSpanAxis.ToDouble y)) 
 
     let private bar color xs =
         let s = OxyPlot.Series.BarSeries(FillColor = color, ItemsSource = xs)
@@ -104,7 +115,7 @@ module Series =
         ensureAxisKeys "X" xAxes
         ensureAxisKeys "Y" yAxes
 
-        let series = x.SeriesData |> toDataPoints |> (ofType x.SeriesType) (Color.from x.Color)
+        let series = x.SeriesData.Data |> toDataPoints |> (ofType x.SeriesType) (Color.from x.Color)
         if x.XAxisIndex >= 0 then series.XAxisKey <- xAxes.[x.XAxisIndex].Key
         if x.YAxisIndex >= 0 then series.YAxisKey <- yAxes.[x.YAxisIndex].Key
 
