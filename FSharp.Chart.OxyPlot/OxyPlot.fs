@@ -20,43 +20,18 @@ module AxisPosition =
 
 module Axis =
     let from (x : Axis) : Axes.Axis =
-        match x.AxisType with
-        | Categorical ->
-            Axes.CategoryAxis
-                (
-                    Title      = x.Title.Value,
-                    TitleColor = Color.from x.TitleColor,
-                    TextColor  = Color.from x.TextColor,
-                    Position   = AxisPosition.from x.AxisPosition
-                )
-            :> Axes.Axis
-        | DateTime ->
-            Axes.DateTimeAxis
-                (
-                    Title        = x.Title.Value,
-                    TitleColor   = Color.from x.TitleColor,
-                    TextColor    = Color.from x.TextColor,
-                    Position     = AxisPosition.from x.AxisPosition
-                )
-            :> Axes.Axis
-        | Linear ->
-            Axes.LinearAxis
-                (
-                    Title      = x.Title.Value,
-                    TitleColor = Color.from x.TitleColor,
-                    TextColor  = Color.from x.TextColor,
-                    Position   = AxisPosition.from x.AxisPosition
-                )
-            :> Axes.Axis
-        | TimeSpan ->
-            Axes.TimeSpanAxis
-                (
-                    Title      = x.Title.Value,
-                    TitleColor = Color.from x.TitleColor,
-                    TextColor  = Color.from x.TextColor,
-                    Position   = AxisPosition.from x.AxisPosition
-                )
-            :> Axes.Axis
+        let axis =
+            match x.AxisType with
+            | Categorical -> Axes.CategoryAxis() :> Axes.Axis
+            | DateTime    -> Axes.DateTimeAxis() :> Axes.Axis
+            | Linear      -> Axes.LinearAxis  () :> Axes.Axis
+            | TimeSpan    -> Axes.TimeSpanAxis() :> Axes.Axis
+
+        axis.Title      <- x.Title.Value
+        axis.TitleColor <- x.TitleColor   |> Color.from       
+        axis.TextColor  <- x.TextColor    |> Color.from       
+        axis.Position   <- x.AxisPosition |> AxisPosition.from
+        axis
 
 module Series =
     let private toFloats =
@@ -96,7 +71,6 @@ module Series =
 
     let private scatter color (xs : DataPoint[]) =
         let s = OxyPlot.Series.ScatterSeries(MarkerFill = color, ItemsSource = xs, DataFieldX = "X", DataFieldY = "Y")
-//        s.Points.AddRange (xs |> Array.map (fun dp -> OxyPlot.Series.ScatterPoint(dp.X, dp.Y)))
         s :> OxyPlot.Series.XYAxisSeries
 
     let ofType x =
