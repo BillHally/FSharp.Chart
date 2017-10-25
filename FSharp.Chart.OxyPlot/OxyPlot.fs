@@ -59,27 +59,51 @@ module Series =
             | TimeSpanDateTime xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.TimeSpanAxis.ToDouble x, Axes.DateTimeAxis.ToDouble y))
             | TimeSpanTimeSpan xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.TimeSpanAxis.ToDouble x, Axes.TimeSpanAxis.ToDouble y))
 
+    let private toBoxPlotItems (xs : BoxPlotItem[]) =
+        xs
+        |> Array.mapi
+            (
+                fun i x ->
+                    OxyPlot.Series.BoxPlotItem
+                        (
+                            float i,
+
+                            x.LowerWhisker,
+                            x.BoxBottom,
+                            x.Median,
+                            x.BoxTop,
+                            x.UpperWhisker,
+
+                            Mean     = x.Mean,
+                            Outliers = x.Outliers
+                        )
+            )
+
     let private bar color xs =
         let s = OxyPlot.Series.BarSeries(FillColor = color, ItemsSource = xs)
 //        s.Items.AddRange (xs |> Array.map (fun d -> OxyPlot.Series.BarItem(d)))
         s :> OxyPlot.Series.XYAxisSeries
 
+    let private boxplot color xs =
+        let s = OxyPlot.Series.BoxPlotSeries(Fill = color, ItemsSource = xs)
+        s :> OxyPlot.Series.XYAxisSeries
+
     let private column width color xs =
         let s = OxyPlot.Series.ColumnSeries(FillColor = color, ColumnWidth = width, ItemsSource = xs)
 //        s.Items.AddRange (xs |> Array.map (fun d -> OxyPlot.Series.ColumnItem(d)))
-        s:> OxyPlot.Series.XYAxisSeries
+        s :> OxyPlot.Series.XYAxisSeries
 
     let private scatter color (xs : DataPoint[]) =
         let s = OxyPlot.Series.ScatterSeries(MarkerFill = color, ItemsSource = xs, DataFieldX = "X", DataFieldY = "Y")
         s :> OxyPlot.Series.XYAxisSeries
 
-    let ofType x =
+    let convert color x =
         match x with
-        | Bar          -> bar
-        | BoxPlot      -> failwithf "nyi: %A" x
-        | Column width -> column width
-        | ErrorColumn  -> failwithf "nyi: %A" x
-        | Scatter      -> scatter
+        | Bar            data  -> bar          color (toDataPoints   data.Data)
+        | BoxPlot        data  -> boxplot      color (toBoxPlotItems data.Data)
+        | Column (width, data) -> column width color (toDataPoints   data.Data)
+        | ErrorColumn    data  -> failwithf "nyi: %A" x
+        | Scatter        data  -> scatter      color (toDataPoints data.Data)
 
     let from (xAxes : Axes.Axis[]) (yAxes : Axes.Axis[]) (x : Series) =
 
@@ -89,7 +113,7 @@ module Series =
         ensureAxisKeys "X" xAxes
         ensureAxisKeys "Y" yAxes
 
-        let series = x.SeriesData.Data |> toDataPoints |> (ofType x.SeriesType) (Color.from x.Color)
+        let series = x.SeriesData |> convert (Color.from x.Color)
         if x.XAxisIndex >= 0 then series.XAxisKey <- xAxes.[x.XAxisIndex].Key
         if x.YAxisIndex >= 0 then series.YAxisKey <- yAxes.[x.YAxisIndex].Key
 
