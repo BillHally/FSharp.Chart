@@ -25,7 +25,7 @@ type SeriesDataWrapper =
     | Data2D   of Data2D
 
 type SeriesData private(data : SeriesDataWrapper) =
-    
+
     new(ys)     = SeriesData(Data1D   (FloatData    ys))
     new(ys)     = SeriesData(Data1D   (DateTimeData ys))
     new(ys)     = SeriesData(Data1D   (TimeSpanData ys))
