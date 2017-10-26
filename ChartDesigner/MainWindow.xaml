@@ -1,0 +1,33 @@
+﻿<Window
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:oxyplot="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
+    mc:Ignorable="d"
+	Title="Chart designer"
+    MinWidth="200"
+    MinHeight="100"
+    SizeToContent="WidthAndHeight"
+    >
+    <Grid
+        >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Viewbox
+            Stretch="Uniform"
+            StretchDirection="Both"
+            >
+            <oxyplot:PlotView
+                MinHeight="500"
+                MinWidth="500"
+                Model="{Binding Model}"
+                />
+        </Viewbox>
+    </Grid>
+</Window>

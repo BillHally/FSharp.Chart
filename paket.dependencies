@@ -3,6 +3,8 @@ source https://www.nuget.org/api/v2
 nuget FAKE
 nuget FSharp.Core
 nuget FSharp.NET.Sdk
+nuget FsXaml.Wpf
+nuget Gjallarhorn.Bindable.Wpf 1.0.0-beta4
 nuget OxyPlot.Core 2.0.0-unstable1013 unstable
-nuget OxyPlot.Wpf 2.0.0-unstable1013 unstable
+nuget OxyPlot.Wpf  2.0.0-unstable1013 unstable
 nuget System.ValueTuple 4.3.1
