@@ -19,12 +19,12 @@ type Data2D =
     | TimeSpanDateTime of (TimeSpan * DateTime)[]
     | TimeSpanTimeSpan of (TimeSpan * TimeSpan)[]
 
-type SeriesDataKind =
+type Data1DOr2D =
     | Data1D   of Data1D
     | Data1x1D of Data1D * Data1D
     | Data2D   of Data2D
 
-type BasicData private(data : SeriesDataKind) =
+type BasicData private(data : Data1DOr2D) =
 
     new(ys)     = BasicData(Data1D   (FloatData    ys))
     new(ys)     = BasicData(Data1D   (DateTimeData ys))
@@ -140,11 +140,11 @@ type Axis =
         }
 
 type SeriesData =
-    | Bar         of                 data : BasicData
-    | BoxPlot     of                 data : BoxPlotData
-    | Column      of width : float * data : BasicData
-    | ErrorColumn of                 data : BasicData
-    | Scatter     of                 data : BasicData
+    | Bar         of data : BasicData
+    | BoxPlot     of data : BoxPlotData
+    | Column      of data : BasicData * width : float
+    | ErrorColumn of data : BasicData
+    | Scatter     of data : BasicData
 
 type Series =
     {

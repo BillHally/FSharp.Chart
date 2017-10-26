@@ -99,11 +99,11 @@ module Series =
 
     let convert color x =
         match x with
-        | Bar            data  -> bar          color (toDataPoints   data.Data)
-        | BoxPlot        data  -> boxplot      color (toBoxPlotItems data.Data)
-        | Column (width, data) -> column width color (toDataPoints   data.Data)
-        | ErrorColumn    data  -> failwithf "nyi: %A" x
-        | Scatter        data  -> scatter      color (toDataPoints data.Data)
+        | Bar         data         -> bar          color (toDataPoints   data.Data)
+        | BoxPlot     data         -> boxplot      color (toBoxPlotItems data.Data)
+        | Column     (data, width) -> column width color (toDataPoints   data.Data)
+        | ErrorColumn data         -> failwithf "nyi: ErrorColumn: %A"   data
+        | Scatter     data         -> scatter      color (toDataPoints   data.Data)
 
     let from (xAxes : Axes.Axis[]) (yAxes : Axes.Axis[]) (x : Series) =
 

@@ -38,7 +38,7 @@ let doubleSeriesExample () =
             [|
                 {
                     Series.Default with
-                        SeriesData = Column (3.0, BasicData [| 1.0..10.0 |])
+                        SeriesData = Column (BasicData [| 1.0..10.0 |], 3.0)
                         Color      = Color.Blue
                 }
 
@@ -84,6 +84,23 @@ let dateTimeTimeSpanExample () =
 let boxPlotExample () =
     let text x = { Text.Default with Value = x }
 
+    let data =
+        [| 100.0..100.0..1000.0 |]
+        |> Array.map
+            (
+                fun x ->
+                    {
+                        UpperWhisker = x
+                        BoxTop       = x * 0.9
+                        Median       = x * 0.6
+                        Mean         = x * 0.5
+                        BoxBottom    = x * 0.4
+                        LowerWhisker = x * 0.3
+                        Outliers     = [| 0.2 * x; 0.25 * x; 1.2 * x; 1.25 * x |]
+                    }
+            )
+
+
     {
         Chart.Default with
             Title = text "Boxplot"
@@ -92,29 +109,8 @@ let boxPlotExample () =
                 [|
                     {
                         Series.Default with
-                            SeriesData =
-                                BoxPlot
-                                    (
-                                        BoxPlotData
-                                            (
-                                                [| 1.0..10.0 |]
-                                                |> Array.map
-                                                    (
-                                                        fun x ->
-                                                            let x = x * 100.0
-                                                            {
-                                                                UpperWhisker = x
-                                                                BoxTop       = x * 0.9
-                                                                Median       = x * 0.6
-                                                                Mean         = x * 0.5
-                                                                BoxBottom    = x * 0.4
-                                                                LowerWhisker = x * 0.3
-                                                                Outliers     = [| 0.2 * x; 0.25 * x; 1.2 * x; 1.25 * x |]
-                                                            }
-                                                    )
-                                            )
-                                    )
-                            Color = Color.AliceBlue
+                            SeriesData = BoxPlot (BoxPlotData data)
+                            Color      = Color.AliceBlue
                     }
                 |]
     }
