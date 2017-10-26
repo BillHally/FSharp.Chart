@@ -20,10 +20,7 @@ let doubleSeriesExample () =
                         AxisType = Categorical
                 }
 
-                {
-                    Axis.DefaultX with
-                        Title = text "X axis"
-                }
+                { Axis.DefaultX with Title = text "X axis" }
             |]
 
         YAxes = [| { Axis.DefaultY with Title = text "Y axis" } |]
@@ -32,12 +29,12 @@ let doubleSeriesExample () =
             [|
                 {
                     Series.Column 3.0 (BasicData [| 1.0..10.0 |]) with
-                        Color      = Color.Blue
+                        Color = Color.Blue
                 }
 
                 {
                     Series.Scatter (BasicData [| 2.5..5.0..97.5 |]) with
-                        Color      = Color.Red
+                        Color = Color.Red
                         XAxisIndex = 1
                 }
             |]
@@ -96,8 +93,8 @@ let boxPlotExample () =
 [<STAThread>]
 [<EntryPoint>]
 let main argv =
-    //doubleSeriesExample ()
-    //dateTimeTimeSpanExample ()
+    doubleSeriesExample ()
+    dateTimeTimeSpanExample ()
     boxPlotExample ()
 
     0
