@@ -162,6 +162,12 @@ type Series =
             YAxisIndex = -1
         }
 
+    static member Bar          x = { Series.Default with SeriesData = (Bar x)                   }
+    static member BoxPlot      x = { Series.Default with SeriesData = (BoxPlot (BoxPlotData x)) }
+    static member Column width x = { Series.Default with SeriesData = (Column (x, width))       }
+    static member ErrorColumn  x = { Series.Default with SeriesData = (ErrorColumn x)           }
+    static member Scatter      x = { Series.Default with SeriesData = (Scatter x)               }
+
 type Chart =
     {
         Title    : Text

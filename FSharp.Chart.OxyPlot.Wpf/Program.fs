@@ -26,25 +26,17 @@ let doubleSeriesExample () =
                 }
             |]
 
-        YAxes =
-            [|
-                {
-                    Axis.DefaultY with
-                        Title = text "Y axis"
-                }
-            |]
+        YAxes = [| { Axis.DefaultY with Title = text "Y axis" } |]
 
         Series =
             [|
                 {
-                    Series.Default with
-                        SeriesData = Column (BasicData [| 1.0..10.0 |], 3.0)
+                    Series.Column 3.0 (BasicData [| 1.0..10.0 |]) with
                         Color      = Color.Blue
                 }
 
                 {
-                    Series.Default with
-                        SeriesData = Scatter (BasicData [| 2.5..5.0..97.5 |])
+                    Series.Scatter (BasicData [| 2.5..5.0..97.5 |]) with
                         Color      = Color.Red
                         XAxisIndex = 1
                 }
@@ -55,6 +47,13 @@ let doubleSeriesExample () =
 let dateTimeTimeSpanExample () =
     let text x = { Text.Default with Value = x }
 
+    let data =
+        BasicData
+            (
+                ([| 1  ..10   |] |> Array.map (fun x -> System.DateTime(2017, 10, x))),
+                ([| 1.0..10.0 |] |> Array.map TimeSpan.FromMinutes)
+            )
+
     {
         Chart.Default with
             Title = text "DateTime vs. TimeSpan"
@@ -62,22 +61,7 @@ let dateTimeTimeSpanExample () =
             XAxes = [| { Axis.DefaultX with Title = text "X axis"; AxisType = AxisType.DateTime } |]
             YAxes = [| { Axis.DefaultY with Title = text "Y axis"; AxisType = AxisType.TimeSpan } |]
 
-            Series =
-                [|
-                    {
-                        Series.Default with
-                            SeriesData =
-                                Scatter
-                                    (
-                                        BasicData
-                                            (
-                                                ([| 1  ..10   |] |> Array.map (fun x -> System.DateTime(2017, 10, x))),
-                                                ([| 1.0..10.0 |] |> Array.map TimeSpan.FromMinutes)
-                                            )
-                                    )
-                            Color      = Color.Blue
-                    }
-                |]
+            Series = [| { Series.Scatter data with Color = Color.Blue } |]
     }
     |> FSharp.Chart.OxyPlot.Wpf.Chart.plot
 
@@ -105,14 +89,7 @@ let boxPlotExample () =
         Chart.Default with
             Title = text "Boxplot"
 
-            Series =
-                [|
-                    {
-                        Series.Default with
-                            SeriesData = BoxPlot (BoxPlotData data)
-                            Color      = Color.AliceBlue
-                    }
-                |]
+            Series = [| { Series.BoxPlot data with Color = Color.AliceBlue } |]
     }
     |> FSharp.Chart.OxyPlot.Wpf.Chart.plot
 
