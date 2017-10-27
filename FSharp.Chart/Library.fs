@@ -119,6 +119,8 @@ type Axis =
         TitleColor   : Color
         TextColor    : Color
         AxisType     : AxisType
+        Minimum      : float
+        Maximum      : float
     }
 
     static member DefaultX =
@@ -128,6 +130,8 @@ type Axis =
             TitleColor   = Color.Black
             TextColor    = Color.Black
             AxisType     = Linear
+            Minimum      = nan
+            Maximum      = nan
         }
 
     static member DefaultY =
@@ -137,6 +141,8 @@ type Axis =
             TitleColor   = Color.Black
             TextColor    = Color.Black
             AxisType     = Linear
+            Minimum      = nan
+            Maximum      = nan
         }
 
 type SeriesData =

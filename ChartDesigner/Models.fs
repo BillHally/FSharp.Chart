@@ -30,6 +30,24 @@ module Examples =
                 Title = text "Boxplot"
 
                 Series = [| { Series.BoxPlot data with Color = Color.AliceBlue } |]
+
+                XAxes =
+                    [|
+                        {
+                            Axis.DefaultX with
+                                Minimum =  0.5
+                                Maximum = 10.5
+                        }
+                    |]
+
+                YAxes =
+                    [|
+                        {
+                            Axis.DefaultY with
+                                Minimum =    0.0
+                                Maximum = 1275.0
+                        }
+                    |]
         }
 
 

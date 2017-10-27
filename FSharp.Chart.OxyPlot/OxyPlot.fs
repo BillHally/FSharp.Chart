@@ -31,6 +31,10 @@ module Axis =
         axis.TitleColor <- x.TitleColor   |> Color.from
         axis.TextColor  <- x.TextColor    |> Color.from
         axis.Position   <- x.AxisPosition |> AxisPosition.from
+
+        if not (Double.IsNaN x.Minimum) then axis.Minimum <- x.Minimum
+        if not (Double.IsNaN x.Maximum) then axis.Maximum <- x.Maximum
+
         axis
 
 module Series =
@@ -66,7 +70,7 @@ module Series =
                 fun i x ->
                     OxyPlot.Series.BoxPlotItem
                         (
-                            float i,
+                            float (i + 1),
 
                             x.LowerWhisker,
                             x.BoxBottom,

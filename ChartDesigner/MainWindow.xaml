@@ -8,26 +8,50 @@
 	Title="Chart designer"
     MinWidth="200"
     MinHeight="100"
-    SizeToContent="WidthAndHeight"
     >
     <Grid
         >
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
         <Viewbox
+            Grid.Row="0"
+            Grid.Column="0"
             Stretch="Uniform"
             StretchDirection="Both"
             >
             <oxyplot:PlotView
-                MinHeight="500"
-                MinWidth="500"
+                MinHeight="{Binding ElementName=VerticalSlider, Path=Value}"
+                MinWidth="{Binding ElementName=HorizontalSlider, Path=Value}"
                 Model="{Binding Model}"
                 />
         </Viewbox>
+
+        <Slider
+            Grid.Row="1"
+            Grid.Column="0"
+            Minimum="100"
+            Value="800"
+            Maximum="1000"
+            Orientation="Horizontal"
+            x:Name="HorizontalSlider"
+            />
+
+        <Slider
+            Grid.Row="0"
+            Grid.Column="1"
+            Minimum="100"
+            Value="600"
+            Maximum="1000"
+            Orientation="Vertical"
+            x:Name="VerticalSlider"
+
+            />
     </Grid>
 </Window>
