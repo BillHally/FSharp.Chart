@@ -6,9 +6,10 @@
     xmlns:oxyplot="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     mc:Ignorable="d"
-	Title="Chart designer"
+	Title="{Binding Title}"
     MinWidth="200"
     MinHeight="100"
+    GlowBrush="{DynamicResource AccentColorBrush}"
     >
     <Grid
         >
@@ -18,7 +19,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="40" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
         <Viewbox
@@ -28,9 +29,9 @@
             StretchDirection="Both"
             >
             <oxyplot:PlotView
-                MinHeight="{Binding ElementName=VerticalSlider, Path=Value}"
-                MinWidth="{Binding ElementName=HorizontalSlider, Path=Value}"
-                Model="{Binding Model}"
+                MinHeight="{Binding Height}"
+                MinWidth="{Binding Width}"
+                Model="{Binding PlotModel}"
                 />
         </Viewbox>
 
@@ -47,18 +48,20 @@
 
             <Slider
                 Minimum="100"
-                Value="800"
-                Maximum="1000"
+                Value="{Binding Width}"
+                Maximum="4000"
                 Orientation="Horizontal"
-                x:Name="HorizontalSlider"
+                VerticalAlignment="Center"
+                Margin="5"
                 />
 
-            <TextBlock
+            <TextBox
                 Grid.Column="1"
-                Text="{Binding ElementName=HorizontalSlider, Path=Value, StringFormat=####}"
-                FontWeight="Bold"
+                Text="{Binding Width, StringFormat=####}"
                 FontSize="14"
                 HorizontalAlignment="Right"
+                Width="50"
+                TextAlignment="Right"
                 />
         </Grid>
 
@@ -72,21 +75,22 @@
                 <RowDefinition Height="*"    />
             </Grid.RowDefinitions>
 
-            <TextBlock
-                Text="{Binding ElementName=VerticalSlider, Path=Value, StringFormat=####}"
-                FontWeight="Bold"
+            <TextBox
+                Text="{Binding Height, StringFormat=####}"
                 FontSize="14"
                 HorizontalAlignment="Right"
+                Width="50"
+                TextAlignment="Right"
                 />
 
             <Slider
                 Grid.Row="1"
                 Minimum="100"
-                Value="600"
-                Maximum="1000"
+                Value="{Binding Height}"
+                Maximum="2000"
                 Orientation="Vertical"
-                x:Name="VerticalSlider"
                 HorizontalAlignment="Right"
+                Margin="5"
             />
         </Grid>
     </Grid>

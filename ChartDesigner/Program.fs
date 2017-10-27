@@ -5,6 +5,7 @@ open System.Windows
 
 open FsXaml
 open Gjallarhorn.Wpf
+open Gjallarhorn.Bindable
 
 open FSharp.Chart.OxyPlot
 
@@ -23,21 +24,12 @@ module WindowsConsole =
 type Application = XAML<"App.xaml">
 type MainWindow = XAML<"MainWindow.xaml">
 
-let createVM () =
-    Examples.boxPlotExample ()
-    |> PlotModel.from
-    |> ChartDesignerViewModel
-
 [<STAThread>]
 [<EntryPoint>]
 let main argv =
     WindowsConsole.attachToParentConsole () |> ignore
     try
-        let application = Application()
-        let vm = createVM ()
-        let mainWindow = MainWindow(Title = "Chart designer", DataContext = vm)
-
-        application.Run mainWindow |> ignore
+        Framework.RunApplication (Application, MainWindow, Core.Program.applicationCore)
         0
     with
     | ex ->

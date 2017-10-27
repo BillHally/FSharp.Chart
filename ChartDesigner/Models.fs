@@ -49,7 +49,3 @@ module Examples =
                         }
                     |]
         }
-
-
-
-

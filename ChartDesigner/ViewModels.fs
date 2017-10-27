@@ -3,6 +3,6 @@
 open System
 open OxyPlot
 
-
-type ChartDesignerViewModel(model : PlotModel) =
+type ChartDesignerViewModel(title : string, model : PlotModel) =
+    member __.Title = title
     member __.Model = model
