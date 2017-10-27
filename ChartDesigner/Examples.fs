@@ -6,7 +6,7 @@ open System.Drawing
 open FSharp.Chart
 
 module Examples =
-    let boxPlotExample () =
+    let boxplot () =
         let text x = { Text.Default with Value = x }
 
         let data =

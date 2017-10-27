@@ -4,8 +4,13 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net471</TargetFramework>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors>20 25</WarningsAsErrors>
+  </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Models.fs" />
+    <Compile Include="Examples.fs" />
     <Compile Include="Core.fs" />
     <Compile Include="ViewModels.fs" />
     <Compile Include="Program.fs" />
