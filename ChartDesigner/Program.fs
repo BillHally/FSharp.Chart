@@ -20,6 +20,7 @@ module WindowsConsole =
 
     let attachToParentConsole () = AttachConsole ATTACH_PARENT_PROCESS
 
+type Application = XAML<"App.xaml">
 type MainWindow = XAML<"MainWindow.xaml">
 
 let createVM () =
@@ -32,8 +33,11 @@ let createVM () =
 let main argv =
     WindowsConsole.attachToParentConsole () |> ignore
     try
+        let application = Application()
         let vm = createVM ()
-        MainWindow(Title = "Chart designer", DataContext = vm).ShowDialog() |> ignore
+        let mainWindow = MainWindow(Title = "Chart designer", DataContext = vm)
+
+        application.Run mainWindow |> ignore
         0
     with
     | ex ->
