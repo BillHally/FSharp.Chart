@@ -1,5 +1,6 @@
 source https://www.nuget.org/api/v2
 
+nuget Extended.Wpf.Toolkit 3.2.0
 nuget FAKE
 nuget FSharp.Core
 nuget FSharp.NET.Sdk

@@ -10,6 +10,7 @@
     <WarningsAsErrors>20 25</WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Converters.fs" />
     <Compile Include="Examples.fs" />
     <Compile Include="Core.fs" />
     <Compile Include="ViewModels.fs" />

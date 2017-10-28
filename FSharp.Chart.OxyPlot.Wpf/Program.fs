@@ -9,35 +9,36 @@ let doubleSeriesExample () =
     let text x = { Text.Default with Value = x }
 
     {
-        Title    = text "Title"
-        Subtitle = text "Subtitle"
+        Chart.Default with
+            Title    = text "Title"
+            Subtitle = text "Subtitle"
 
-        XAxes =
-            [|
-                {
-                    Axis.DefaultX with
-                        Title = text "Categorical x-axis"
-                        AxisType = Categorical
-                }
+            XAxes =
+                [|
+                    {
+                        Axis.DefaultX with
+                            Title = text "Categorical x-axis"
+                            AxisType = Categorical
+                    }
 
-                { Axis.DefaultX with Title = text "X axis" }
-            |]
+                    { Axis.DefaultX with Title = text "X axis" }
+                |]
 
-        YAxes = [| { Axis.DefaultY with Title = text "Y axis" } |]
+            YAxes = [| { Axis.DefaultY with Title = text "Y axis" } |]
 
-        Series =
-            [|
-                {
-                    Series.Column 3.0 (BasicData [| 1.0..10.0 |]) with
-                        Color = Color.Blue
-                }
+            Series =
+                [|
+                    {
+                        Series.Column 3.0 (BasicData [| 1.0..10.0 |]) with
+                            Color = Color.Blue
+                    }
 
-                {
-                    Series.Scatter (BasicData [| 2.5..5.0..97.5 |]) with
-                        Color = Color.Red
-                        XAxisIndex = 1
-                }
-            |]
+                    {
+                        Series.Scatter (BasicData [| 2.5..5.0..97.5 |]) with
+                            Color = Color.Red
+                            XAxisIndex = 1
+                    }
+                |]
     }
     |> FSharp.Chart.OxyPlot.Wpf.Chart.plot
 

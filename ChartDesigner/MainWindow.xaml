@@ -3,8 +3,10 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:xctk="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
     xmlns:oxyplot="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:converters="clr-namespace:ChartDesigner.Converters;assembly=ChartDesigner"
     mc:Ignorable="d"
 	Title="{Binding ProgramTitle}"
     MinWidth="200"
@@ -13,6 +15,11 @@
     >
     <Grid
         >
+        <Grid.Resources>
+            <ResourceDictionary>
+                <converters:NullableMediaColorToDrawingColorConverter x:Key="NullableMediaColorToDrawingColorConverter" />
+            </ResourceDictionary>
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -33,17 +40,28 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*"    />
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="150" />
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Chart" FontSize="16" FontWeight="Bold" />
+
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Title" />
             <TextBox   Grid.Row="1" Grid.Column="1" Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Subtitle" />
+            <TextBox   Grid.Row="2" Grid.Column="1" Text="{Binding Subtitle, UpdateSourceTrigger=PropertyChanged}" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Background" />
+            <xctk:ColorPicker Grid.Row="3" Grid.Column="1" SelectedColor="{Binding Background, Converter={StaticResource NullableMediaColorToDrawingColorConverter}}" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Plot area background" />
+            <xctk:ColorPicker Grid.Row="4" Grid.Column="1" SelectedColor="{Binding PlotAreaBackground, Converter={StaticResource NullableMediaColorToDrawingColorConverter}}" />
         </Grid>
 
         <Viewbox

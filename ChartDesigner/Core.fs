@@ -1,5 +1,8 @@
 ﻿module ChartDesigner.Core
 
+open System
+open System.Drawing
+
 open Gjallarhorn
 open Gjallarhorn.Bindable
 open Gjallarhorn.Bindable.Framework
@@ -21,7 +24,11 @@ module Program =
             Height       : float
             Chart        : Chart
 
+            Background : Color
+            PlotAreaBackground : Color
+
             Title : string
+            Subtitle : string
         }
     with
         static member Default =
@@ -30,13 +37,21 @@ module Program =
                 Width        = 1000.0
                 Height       = 1000.0
                 Chart        = ChartDesigner.Models.Examples.boxplot ()
-                Title        = "Boxplot"
+
+                Title    = "Boxplot"
+                Subtitle = "Subtitle"
+
+                Background         = Color.Transparent
+                PlotAreaBackground = Color.Transparent
             }
 
     type Msg =
-        | Width  of float
-        | Height of float
-        | Title  of string
+        | Width    of float
+        | Height   of float
+        | Title    of string
+        | Subtitle of string
+        | Background         of Color
+        | PlotAreaBackground of Color
 
     let update msg (model : Model) =
         match msg with
@@ -48,6 +63,25 @@ module Program =
                     Title = x
                     Chart = { model.Chart with Title = { model.Chart.Title with Value = x } }
             }
+        | Subtitle x ->
+            {
+                model with
+                    Subtitle = x
+                    Chart = { model.Chart with Subtitle = { model.Chart.Subtitle with Value = x } }
+            }
+        | Background x ->
+            {
+                model with
+                    Background = x
+                    Chart = { model.Chart with Background = x }
+            }
+        | PlotAreaBackground x ->
+            {
+                model with
+                    PlotAreaBackground = x
+                    Chart = { model.Chart with PlotAreaBackground = x }
+            }
+
 
     [<CLIMutable>]
     type ViewModel =
@@ -57,7 +91,10 @@ module Program =
             Height       : float
             PlotModel    : PlotModel
 
-            Title : string
+            Title    : string
+            Subtitle : string
+            Background : Color
+            PlotAreaBackground : Color
         }
 
     let d =
@@ -67,7 +104,10 @@ module Program =
             Height       = 1000.0
             PlotModel    = PlotModel()
 
-            Title = ""
+            Title    = ""
+            Subtitle = ""
+            Background = Color.Transparent
+            PlotAreaBackground = Color.Transparent
         }
 
     let bindToSource =
@@ -76,7 +116,10 @@ module Program =
             <@ d.Width        @> |> Bind.twoWay (fun x -> x.Width)  Width  //Validated (fun m -> m.FirstName) notNullOrWhitespace FirstName
             <@ d.Height       @> |> Bind.twoWay (fun x -> x.Height) Height //Validated (fun m -> m.LastName) validLast LastName
 
-            <@ d.Title        @> |> Bind.twoWay (fun x -> x.Title) Title
+            <@ d.Title              @> |> Bind.twoWay (fun x -> x.Title             ) Title
+            <@ d.Subtitle           @> |> Bind.twoWay (fun x -> x.Subtitle          ) Subtitle
+            <@ d.Background         @> |> Bind.twoWay (fun x -> x.Background        ) Background
+            <@ d.PlotAreaBackground @> |> Bind.twoWay (fun x -> x.PlotAreaBackground) PlotAreaBackground
 
             <@ d.PlotModel    @> |> Bind.oneWay (fun x -> x.Chart |> PlotModel.from)
         ]

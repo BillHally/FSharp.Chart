@@ -140,7 +140,15 @@ module PlotModel =
         xs
 
     let from (chart : Chart) =
-        let plotModel = PlotModel(Title = chart.Title.Value, Subtitle = chart.Subtitle.Value)
+
+        let plotModel =
+            PlotModel
+                (
+                    Title = chart.Title.Value,
+                    Subtitle = chart.Subtitle.Value,
+                    Background = Color.from chart.Background,
+                    PlotAreaBackground = Color.from chart.PlotAreaBackground
+                )
 
         let xAxes = chart.XAxes |> Array.map Axis.from |> setPositionTiers
         xAxes |> Array.iter plotModel.Axes.Add

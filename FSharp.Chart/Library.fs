@@ -179,6 +179,9 @@ type Chart =
         Title    : Text
         Subtitle : Text
 
+        Background         : Color
+        PlotAreaBackground : Color
+
         XAxes : Axis[]
         YAxes : Axis[]
 
@@ -189,6 +192,9 @@ type Chart =
         {
             Title    = Text.Default
             Subtitle = Text.Default
+
+            Background         = Color.Transparent
+            PlotAreaBackground = Color.Transparent
 
             XAxes  = [||]
             YAxes  = [||]
