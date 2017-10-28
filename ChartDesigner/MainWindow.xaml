@@ -17,7 +17,7 @@
         >
         <Grid.Resources>
             <ResourceDictionary>
-                <converters:NullableMediaColorToDrawingColorConverter x:Key="NullableMediaColorToDrawingColorConverter" />
+                <converters:DrawingColorToMediaColorConverter x:Key="DrawingColorToMediaColorConverter" />
             </ResourceDictionary>
         </Grid.Resources>
         <Grid.RowDefinitions>
@@ -58,10 +58,10 @@
             <TextBox   Grid.Row="2" Grid.Column="1" Text="{Binding Subtitle, UpdateSourceTrigger=PropertyChanged}" />
 
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Background" />
-            <xctk:ColorPicker Grid.Row="3" Grid.Column="1" SelectedColor="{Binding Background, Converter={StaticResource NullableMediaColorToDrawingColorConverter}}" />
+            <xctk:ColorPicker Grid.Row="3" Grid.Column="1" SelectedColor="{Binding Background, Converter={StaticResource DrawingColorToMediaColorConverter}}" />
 
             <TextBlock Grid.Row="4" Grid.Column="0" Text="Plot area background" />
-            <xctk:ColorPicker Grid.Row="4" Grid.Column="1" SelectedColor="{Binding PlotAreaBackground, Converter={StaticResource NullableMediaColorToDrawingColorConverter}}" />
+            <xctk:ColorPicker Grid.Row="4" Grid.Column="1" SelectedColor="{Binding PlotAreaBackground, Converter={StaticResource DrawingColorToMediaColorConverter}}" />
         </Grid>
 
         <Viewbox
