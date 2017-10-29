@@ -7,6 +7,7 @@
     xmlns:oxyplot="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
     xmlns:mahapps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:converters="clr-namespace:ChartDesigner.Converters;assembly=ChartDesigner"
+    xmlns:chartdesigner="clr-namespace:ChartDesigner;assembly=ChartDesigner"
     mc:Ignorable="d"
 	Title="{Binding ProgramTitle}"
     MinWidth="200"
@@ -31,6 +32,7 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
+        <!-- Chart properties -->
         <Grid
             Grid.Row="0"
             Grid.Column="0"
@@ -41,29 +43,34 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*"    />
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="130" />
                 <ColumnDefinition Width="150" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Chart" FontSize="16" FontWeight="Bold" />
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="5" Text="Chart" FontSize="16" FontWeight="Bold" />
 
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Title" />
-            <TextBox   Grid.Row="1" Grid.Column="1" Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="5" Text="Title" />
+            <TextBox   Grid.Row="1" Grid.Column="1" Margin="5" Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
 
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Subtitle" />
-            <TextBox   Grid.Row="2" Grid.Column="1" Text="{Binding Subtitle, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Grid.Row="2" Grid.Column="0" Margin="5" Text="Subtitle" />
+            <TextBox   Grid.Row="2" Grid.Column="1" Margin="5" Text="{Binding Subtitle, UpdateSourceTrigger=PropertyChanged}" />
 
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Background" />
-            <xctk:ColorPicker Grid.Row="3" Grid.Column="1" SelectedColor="{Binding Background, Converter={StaticResource DrawingColorToMediaColorConverter}}" />
+            <TextBlock Grid.Row="3" Grid.Column="0" Margin="5" Text="Background" />
+            <xctk:ColorPicker Grid.Row="3" Grid.Column="1" Margin="5" SelectedColor="{Binding Background, Converter={StaticResource DrawingColorToMediaColorConverter}}" />
 
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Plot area background" />
-            <xctk:ColorPicker Grid.Row="4" Grid.Column="1" SelectedColor="{Binding PlotAreaBackground, Converter={StaticResource DrawingColorToMediaColorConverter}}" />
+            <TextBlock Grid.Row="4" Grid.Column="0" Margin="5" Text="Plot area background" />
+            <xctk:ColorPicker Grid.Row="4" Grid.Column="1" Margin="5" SelectedColor="{Binding PlotAreaBackground, Converter={StaticResource DrawingColorToMediaColorConverter}}" />
+
+            <TextBlock Grid.Row="5" Grid.Column="0" Margin="5" Text="Series type" />
+            <ComboBox Grid.Row="5" Grid.Column="1" Margin="5" SelectedItem="{Binding SeriesType}" IsReadOnly="True" IsEditable="False" ItemsSource="{x:Static chartdesigner:SeriesType.Items}"/>
         </Grid>
 
+        <!-- Chart -->
         <Viewbox
             Grid.Row="0"
             Grid.Column="1"
@@ -77,10 +84,11 @@
                 />
         </Viewbox>
 
+        <!-- Width slider -->
         <Grid
             Grid.Row="1"
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="4"
             Margin="5"
             >
             <Grid.ColumnDefinitions>
@@ -107,6 +115,7 @@
                 />
         </Grid>
 
+        <!-- Height slider -->
         <Grid
             Grid.Row="0"
             Grid.Column="2"

@@ -1,4 +1,4 @@
-﻿namespace ChartDesigner.Models
+﻿namespace ChartDesigner
 
 open System
 open System.Drawing
@@ -6,6 +6,34 @@ open System.Drawing
 open FSharp.Chart
 
 module Examples =
+    let bar () =
+        let text x = { Text.Default with Value = x }
+
+        {
+            Chart.Default with
+                Title    = text "Bar"
+                Subtitle = text ""
+
+                XAxes = [| { Axis.DefaultX with Title = text "X-axis" } |]
+
+                YAxes =
+                    [|
+                        {
+                            Axis.DefaultY with
+                                Title = text "Categorical y-axis"
+                                AxisType = Categorical
+                        }
+                    |]
+
+                Series =
+                    [|
+                        {
+                            Series.Column 3.0 (BasicData [| 1.0..10.0 |]) with
+                                Color = Color.Blue
+                        }
+                    |]
+        }
+
     let boxplot () =
         let text x = { Text.Default with Value = x }
 
@@ -46,6 +74,56 @@ module Examples =
                             Axis.DefaultY with
                                 Minimum =    0.0
                                 Maximum = 1275.0
+                        }
+                    |]
+        }
+
+    let column () =
+        let text x = { Text.Default with Value = x }
+
+        {
+            Chart.Default with
+                Title    = text "Title"
+                Subtitle = text "Subtitle"
+
+                XAxes =
+                    [|
+                        {
+                            Axis.DefaultX with
+                                Title = text "Categorical x-axis"
+                                AxisType = Categorical
+                        }
+                    |]
+
+                YAxes = [| { Axis.DefaultY with Title = text "Y axis" } |]
+
+                Series =
+                    [|
+                        {
+                            Series.Column 3.0 (BasicData [| 1.0..10.0 |]) with
+                                Color = Color.Blue
+                        }
+                    |]
+        }
+
+    let errorColumn () = failwith "NotYetImplemented"
+
+    let scatter () =
+        let text x = { Text.Default with Value = x }
+
+        {
+            Chart.Default with
+                Title    = text "Title"
+                Subtitle = text "Subtitle"
+
+                XAxes = [| { Axis.DefaultX with Title = text "X axis" } |]
+                YAxes = [| { Axis.DefaultY with Title = text "Y axis" } |]
+
+                Series =
+                    [|
+                        {
+                            Series.Scatter (BasicData [| 2.5..5.0..97.5 |]) with
+                                Color = Color.Red
                         }
                     |]
         }

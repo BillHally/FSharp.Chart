@@ -8,7 +8,6 @@ type DrawingColorToMediaColorConverter() =
 
     interface IValueConverter with
         member __.Convert(value, _, _, _) =
-            printfn "Convert: %A (%s)" value (value.GetType().FullName)
             match value with
             | :? Drawing.Color as x ->
                 Media.Color.FromArgb(x.A, x.R, x.G, x.B) |> box
@@ -16,7 +15,6 @@ type DrawingColorToMediaColorConverter() =
                 failwithf "Convert: Can't convert: %A (%s)" value (value.GetType().FullName)
 
         member __.ConvertBack(value, _, _, _) =
-            printfn "ConvertBack: %A (%s)" value (value.GetType().FullName)
             match value with
             | :? Media.Color as x ->
                 let value = Drawing.Color.FromArgb(int x.A, int x.R, int x.G, int x.B)

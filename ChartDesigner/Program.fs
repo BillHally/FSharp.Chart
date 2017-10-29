@@ -9,7 +9,7 @@ open Gjallarhorn.Bindable
 
 open FSharp.Chart.OxyPlot
 
-open ChartDesigner.Models
+open ChartDesigner
 open ChartDesigner.ViewModels
 
 module WindowsConsole =
@@ -29,7 +29,7 @@ type MainWindow = XAML<"MainWindow.xaml">
 let main argv =
     WindowsConsole.attachToParentConsole () |> ignore
     try
-        Framework.RunApplication (Application, MainWindow, Core.Program.applicationCore)
+        Framework.RunApplication (Application, MainWindow, Program.applicationCore)
         0
     with
     | ex ->

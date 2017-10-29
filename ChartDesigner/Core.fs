@@ -1,4 +1,4 @@
-﻿module ChartDesigner.Core
+﻿namespace ChartDesigner
 
 open System
 open System.Drawing
@@ -9,13 +9,49 @@ open Gjallarhorn.Bindable.Framework
 open Gjallarhorn.Validation
 open Gjallarhorn.Validation.Validators
 
+open OxyPlot
+
 open FSharp.Chart
 open FSharp.Chart.OxyPlot
 
-open ChartDesigner.Models
+module Chart =
+    let setPlotAreaBackground plotAreaBackground x =
+        { x with PlotAreaBackground = plotAreaBackground }
+
+    let setBackground background x =
+        { x with Background = background }
+
+    let setSubtitle subtitle x =
+        { x with Subtitle = { x.Subtitle with Value = subtitle } }
+
+    let setTitle title x : Chart =
+        { x with Title = { x.Title with Value = title } }
+
+type SeriesType =
+    | Bar
+    | BoxPlot
+    | Column
+    | ErrorColumn
+    | Scatter
+
+    static member Items =
+        [|
+            Bar
+            BoxPlot
+            Column
+            ErrorColumn
+            Scatter
+        |]
 
 module Program =
-    open OxyPlot
+
+    let getExample =
+        function
+        |   Bar         -> Examples.bar         ()
+        |   BoxPlot     -> Examples.boxplot     ()
+        |   Column      -> Examples.column      ()
+        |   ErrorColumn -> Examples.errorColumn ()
+        |   Scatter     -> Examples.scatter     ()
 
     type Model =
         {
@@ -23,6 +59,7 @@ module Program =
             Width        : float
             Height       : float
             Chart        : Chart
+            SeriesType   : SeriesType
 
             Background : Color
             PlotAreaBackground : Color
@@ -34,9 +71,11 @@ module Program =
         static member Default =
             {
                 ProgramTitle = "Chart Designer"
-                Width        = 1000.0
+                Width        = 1500.0
                 Height       = 1000.0
-                Chart        = ChartDesigner.Models.Examples.boxplot ()
+                SeriesType   = BoxPlot
+
+                Chart = ChartDesigner.Examples.boxplot ()
 
                 Title    = "Boxplot"
                 Subtitle = "Subtitle"
@@ -52,6 +91,7 @@ module Program =
         | Subtitle of string
         | Background         of Color
         | PlotAreaBackground of Color
+        | SeriesType of SeriesType
 
     let update msg (model : Model) =
         match msg with
@@ -61,27 +101,38 @@ module Program =
             {
                 model with
                     Title = x
-                    Chart = { model.Chart with Title = { model.Chart.Title with Value = x } }
+                    Chart = Chart.setTitle x model.Chart
             }
         | Subtitle x ->
             {
                 model with
                     Subtitle = x
-                    Chart = { model.Chart with Subtitle = { model.Chart.Subtitle with Value = x } }
+                    Chart = Chart.setSubtitle x model.Chart
             }
         | Background x ->
             {
                 model with
                     Background = x
-                    Chart = { model.Chart with Background = x }
+                    Chart = Chart.setBackground x model.Chart
             }
         | PlotAreaBackground x ->
             {
                 model with
                     PlotAreaBackground = x
-                    Chart = { model.Chart with PlotAreaBackground = x }
+                    Chart = Chart.setPlotAreaBackground x model.Chart
             }
-
+        | SeriesType x ->
+            {
+                model with
+                    SeriesType = x
+                    Chart =
+                        x
+                        |> getExample
+                        |> Chart.setTitle              model.Title
+                        |> Chart.setSubtitle           model.Subtitle
+                        |> Chart.setBackground         model.Background
+                        |> Chart.setPlotAreaBackground model.PlotAreaBackground
+            }
 
     [<CLIMutable>]
     type ViewModel =
@@ -95,6 +146,7 @@ module Program =
             Subtitle : string
             Background : Color
             PlotAreaBackground : Color
+            SeriesType : SeriesType
         }
 
     let d =
@@ -108,6 +160,7 @@ module Program =
             Subtitle = ""
             Background = Color.Transparent
             PlotAreaBackground = Color.Transparent
+            SeriesType = SeriesType.BoxPlot
         }
 
     let bindToSource =
@@ -120,6 +173,7 @@ module Program =
             <@ d.Subtitle           @> |> Bind.twoWay (fun x -> x.Subtitle          ) Subtitle
             <@ d.Background         @> |> Bind.twoWay (fun x -> x.Background        ) Background
             <@ d.PlotAreaBackground @> |> Bind.twoWay (fun x -> x.PlotAreaBackground) PlotAreaBackground
+            <@ d.SeriesType         @> |> Bind.twoWay (fun x -> x.SeriesType        ) SeriesType
 
             <@ d.PlotModel    @> |> Bind.oneWay (fun x -> x.Chart |> PlotModel.from)
         ]
