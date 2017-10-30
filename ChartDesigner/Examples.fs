@@ -128,7 +128,7 @@ module Examples =
                 Series =
                     [|
                         {
-                            Series.ErrorColumn 3.0 (ErrorData ([| 1.0..10.0 |], [| 2.0..2.0..20.0 |])) with
+                            Series.ErrorColumn 3.0 (ErrorData ([| 20.0..20.0..200.0 |], [| 2.0..2.0..20.0 |])) with
                                 Color = Color.Green
                         }
                     |]
