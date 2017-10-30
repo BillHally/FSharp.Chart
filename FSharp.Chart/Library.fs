@@ -3,12 +3,12 @@ namespace FSharp.Chart
 open System
 open System.Drawing
 
-type Data1D =
+type SimpleData =
     | FloatData    of float   []
     | DateTimeData of DateTime[]
     | TimeSpanData of TimeSpan[]
 
-type Data2D =
+type TupleData =
     | FloatFloat       of (float    *    float)[]
     | FloatDateTime    of (float    * DateTime)[]
     | FloatTimeSpan    of (float    * TimeSpan)[]
@@ -20,35 +20,63 @@ type Data2D =
     | TimeSpanTimeSpan of (TimeSpan * TimeSpan)[]
 
 type Data1DOr2D =
-    | Data1D   of Data1D
-    | Data1x1D of Data1D * Data1D
-    | Data2D   of Data2D
+    | Data1D   of SimpleData
+    | Data1x1D of SimpleData * SimpleData
+    | Data2D   of TupleData
 
-type BasicData private(data : Data1DOr2D) =
+type DataWithErrors =
+    | TupleOfArrays of SimpleData * SimpleData
+    | ArrayOfTuples of TupleData
 
-    new(ys)     = BasicData(Data1D   (FloatData    ys))
-    new(ys)     = BasicData(Data1D   (DateTimeData ys))
-    new(ys)     = BasicData(Data1D   (TimeSpanData ys))
+type ScatterData private(data : Data1DOr2D) =
 
-    new(xs, ys) = BasicData(Data1x1D (FloatData    xs, FloatData    ys))
-    new(xs, ys) = BasicData(Data1x1D (FloatData    xs, DateTimeData ys))
-    new(xs, ys) = BasicData(Data1x1D (FloatData    xs, TimeSpanData ys))
-    new(xs, ys) = BasicData(Data1x1D (DateTimeData xs, FloatData    ys))
-    new(xs, ys) = BasicData(Data1x1D (DateTimeData xs, DateTimeData ys))
-    new(xs, ys) = BasicData(Data1x1D (DateTimeData xs, TimeSpanData ys))
-    new(xs, ys) = BasicData(Data1x1D (TimeSpanData xs, FloatData    ys))
-    new(xs, ys) = BasicData(Data1x1D (TimeSpanData xs, DateTimeData ys))
-    new(xs, ys) = BasicData(Data1x1D (TimeSpanData xs, TimeSpanData ys))
+    new(ys)     = ScatterData(Data1D   (FloatData    ys))
+    new(ys)     = ScatterData(Data1D   (DateTimeData ys))
+    new(ys)     = ScatterData(Data1D   (TimeSpanData ys))
 
-    new(xys)    = BasicData(Data2D   (FloatFloat       xys))
-    new(xys)    = BasicData(Data2D   (FloatDateTime    xys))
-    new(xys)    = BasicData(Data2D   (FloatTimeSpan    xys))
-    new(xys)    = BasicData(Data2D   (DateTimeFloat    xys))
-    new(xys)    = BasicData(Data2D   (DateTimeDateTime xys))
-    new(xys)    = BasicData(Data2D   (DateTimeTimeSpan xys))
-    new(xys)    = BasicData(Data2D   (TimeSpanFloat    xys))
-    new(xys)    = BasicData(Data2D   (TimeSpanDateTime xys))
-    new(xys)    = BasicData(Data2D   (TimeSpanTimeSpan xys))
+    new(xs, ys) = ScatterData(Data1x1D (FloatData    xs, FloatData    ys))
+    new(xs, ys) = ScatterData(Data1x1D (FloatData    xs, DateTimeData ys))
+    new(xs, ys) = ScatterData(Data1x1D (FloatData    xs, TimeSpanData ys))
+    new(xs, ys) = ScatterData(Data1x1D (DateTimeData xs, FloatData    ys))
+    new(xs, ys) = ScatterData(Data1x1D (DateTimeData xs, DateTimeData ys))
+    new(xs, ys) = ScatterData(Data1x1D (DateTimeData xs, TimeSpanData ys))
+    new(xs, ys) = ScatterData(Data1x1D (TimeSpanData xs, FloatData    ys))
+    new(xs, ys) = ScatterData(Data1x1D (TimeSpanData xs, DateTimeData ys))
+    new(xs, ys) = ScatterData(Data1x1D (TimeSpanData xs, TimeSpanData ys))
+
+    new(xys)    = ScatterData(Data2D   (FloatFloat       xys))
+    new(xys)    = ScatterData(Data2D   (FloatDateTime    xys))
+    new(xys)    = ScatterData(Data2D   (FloatTimeSpan    xys))
+    new(xys)    = ScatterData(Data2D   (DateTimeFloat    xys))
+    new(xys)    = ScatterData(Data2D   (DateTimeDateTime xys))
+    new(xys)    = ScatterData(Data2D   (DateTimeTimeSpan xys))
+    new(xys)    = ScatterData(Data2D   (TimeSpanFloat    xys))
+    new(xys)    = ScatterData(Data2D   (TimeSpanDateTime xys))
+    new(xys)    = ScatterData(Data2D   (TimeSpanTimeSpan xys))
+
+    member __.Data = data
+
+type ErrorData private(data : DataWithErrors) =
+
+    new(xs, ys) = ErrorData(TupleOfArrays (FloatData    xs, FloatData    ys))
+    new(xs, ys) = ErrorData(TupleOfArrays (FloatData    xs, DateTimeData ys))
+    new(xs, ys) = ErrorData(TupleOfArrays (FloatData    xs, TimeSpanData ys))
+    new(xs, ys) = ErrorData(TupleOfArrays (DateTimeData xs, FloatData    ys))
+    new(xs, ys) = ErrorData(TupleOfArrays (DateTimeData xs, DateTimeData ys))
+    new(xs, ys) = ErrorData(TupleOfArrays (DateTimeData xs, TimeSpanData ys))
+    new(xs, ys) = ErrorData(TupleOfArrays (TimeSpanData xs, FloatData    ys))
+    new(xs, ys) = ErrorData(TupleOfArrays (TimeSpanData xs, DateTimeData ys))
+    new(xs, ys) = ErrorData(TupleOfArrays (TimeSpanData xs, TimeSpanData ys))
+
+    new(xys)    = ErrorData(ArrayOfTuples (FloatFloat       xys))
+    new(xys)    = ErrorData(ArrayOfTuples (FloatDateTime    xys))
+    new(xys)    = ErrorData(ArrayOfTuples (FloatTimeSpan    xys))
+    new(xys)    = ErrorData(ArrayOfTuples (DateTimeFloat    xys))
+    new(xys)    = ErrorData(ArrayOfTuples (DateTimeDateTime xys))
+    new(xys)    = ErrorData(ArrayOfTuples (DateTimeTimeSpan xys))
+    new(xys)    = ErrorData(ArrayOfTuples (TimeSpanFloat    xys))
+    new(xys)    = ErrorData(ArrayOfTuples (TimeSpanDateTime xys))
+    new(xys)    = ErrorData(ArrayOfTuples (TimeSpanTimeSpan xys))
 
     member __.Data = data
 
@@ -146,11 +174,11 @@ type Axis =
         }
 
 type SeriesData =
-    | Bar         of data : BasicData
+    | Bar         of data : SimpleData * width : float
     | BoxPlot     of data : BoxPlotData
-    | Column      of data : BasicData * width : float
-    | ErrorColumn of data : BasicData
-    | Scatter     of data : BasicData
+    | Column      of data : SimpleData * width : float
+    | ErrorColumn of data : ErrorData  * width : float
+    | Scatter     of data : ScatterData
 
 type Series =
     {
@@ -162,17 +190,17 @@ type Series =
 
     static member Default =
         {
-            SeriesData = Scatter (BasicData([||] : float[]))
+            SeriesData = Scatter (ScatterData([||] : float[]))
             Color      = Color.Black
             XAxisIndex = -1
             YAxisIndex = -1
         }
 
-    static member Bar          x = { Series.Default with SeriesData = (Bar x)                   }
-    static member BoxPlot      x = { Series.Default with SeriesData = (BoxPlot (BoxPlotData x)) }
-    static member Column width x = { Series.Default with SeriesData = (Column (x, width))       }
-    static member ErrorColumn  x = { Series.Default with SeriesData = (ErrorColumn x)           }
-    static member Scatter      x = { Series.Default with SeriesData = (Scatter x)               }
+    static member Bar         width x = { Series.Default with SeriesData = (Bar          (x, width)) }
+    static member BoxPlot           x = { Series.Default with SeriesData = (BoxPlot (BoxPlotData x)) }
+    static member Column      width x = { Series.Default with SeriesData = (Column       (x, width)) }
+    static member ErrorColumn width x = { Series.Default with SeriesData = (ErrorColumn  (x, width)) }
+    static member Scatter           x = { Series.Default with SeriesData = (Scatter x)               }
 
 type Chart =
     {

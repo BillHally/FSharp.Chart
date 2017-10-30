@@ -63,6 +63,24 @@ module Series =
             | TimeSpanDateTime xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.TimeSpanAxis.ToDouble x, Axes.DateTimeAxis.ToDouble y))
             | TimeSpanTimeSpan xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.TimeSpanAxis.ToDouble x, Axes.TimeSpanAxis.ToDouble y))
 
+    let private toErrorItems =
+        function
+        | TupleOfArrays (xs, ys) ->
+            let xs = xs |> toFloats
+            let ys = ys |> toFloats
+            xs |> Array.mapi (fun i x -> OxyPlot.Series.ErrorColumnItem(x, ys.[i]))
+        | ArrayOfTuples xys ->
+            match xys with
+            | FloatFloat       xys -> xys |> Array.map (fun (x, y) -> OxyPlot.Series.ErrorColumnItem(                           x,                            y))
+            | FloatDateTime    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.Series.ErrorColumnItem(                           x, Axes.DateTimeAxis.ToDouble y))
+            | FloatTimeSpan    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.Series.ErrorColumnItem(                           x, Axes.TimeSpanAxis.ToDouble y))
+            | DateTimeFloat    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.Series.ErrorColumnItem(Axes.DateTimeAxis.ToDouble x,                            y))
+            | DateTimeDateTime xys -> xys |> Array.map (fun (x, y) -> OxyPlot.Series.ErrorColumnItem(Axes.DateTimeAxis.ToDouble x, Axes.DateTimeAxis.ToDouble y))
+            | DateTimeTimeSpan xys -> xys |> Array.map (fun (x, y) -> OxyPlot.Series.ErrorColumnItem(Axes.DateTimeAxis.ToDouble x, Axes.TimeSpanAxis.ToDouble y))
+            | TimeSpanFloat    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.Series.ErrorColumnItem(Axes.TimeSpanAxis.ToDouble x,                            y))
+            | TimeSpanDateTime xys -> xys |> Array.map (fun (x, y) -> OxyPlot.Series.ErrorColumnItem(Axes.TimeSpanAxis.ToDouble x, Axes.DateTimeAxis.ToDouble y))
+            | TimeSpanTimeSpan xys -> xys |> Array.map (fun (x, y) -> OxyPlot.Series.ErrorColumnItem(Axes.TimeSpanAxis.ToDouble x, Axes.TimeSpanAxis.ToDouble y))
+
     let private toBoxPlotItems (xs : BoxPlotItem[]) =
         xs
         |> Array.mapi
@@ -83,31 +101,37 @@ module Series =
                         )
             )
 
-    let private bar color xs =
-        let s = OxyPlot.Series.BarSeries(FillColor = color, ItemsSource = xs)
-//        s.Items.AddRange (xs |> Array.map (fun d -> OxyPlot.Series.BarItem(d)))
+    let private bar width color xs =
+        let xs = xs |> Array.map (fun value -> OxyPlot.Series.BarItem(value))
+        let s = OxyPlot.Series.BarSeries(FillColor = color, BarWidth = width, ItemsSource = xs)
         s :> OxyPlot.Series.XYAxisSeries
 
     let private boxplot color xs =
-        let s = OxyPlot.Series.BoxPlotSeries(Fill = color, ItemsSource = xs)
-        s :> OxyPlot.Series.XYAxisSeries
+        OxyPlot.Series.BoxPlotSeries(Fill = color, ItemsSource = xs)
+        :> OxyPlot.Series.XYAxisSeries
 
     let private column width color xs =
+        let xs = xs |> Array.map (fun value -> OxyPlot.Series.ColumnItem(value))
         let s = OxyPlot.Series.ColumnSeries(FillColor = color, ColumnWidth = width, ItemsSource = xs)
 //        s.Items.AddRange (xs |> Array.map (fun d -> OxyPlot.Series.ColumnItem(d)))
         s :> OxyPlot.Series.XYAxisSeries
 
-    let private scatter color (xs : DataPoint[]) =
-        let s = OxyPlot.Series.ScatterSeries(MarkerFill = color, ItemsSource = xs, DataFieldX = "X", DataFieldY = "Y")
+    let private errorColumn width color (xs : OxyPlot.Series.ErrorColumnItem[]) =
+        let s = OxyPlot.Series.ErrorColumnSeries(FillColor = color, ColumnWidth = width, ItemsSource = xs)
+//        s.Items.AddRange (xs |> Array.map (fun d -> OxyPlot.Series.ErrorColumnItem(d)))
         s :> OxyPlot.Series.XYAxisSeries
+
+    let private scatter color (xs : DataPoint[]) =
+        OxyPlot.Series.ScatterSeries(MarkerFill = color, ItemsSource = xs, DataFieldX = "X", DataFieldY = "Y")
+        :> OxyPlot.Series.XYAxisSeries
 
     let convert color x =
         match x with
-        | Bar         data         -> bar          color (toDataPoints   data.Data)
-        | BoxPlot     data         -> boxplot      color (toBoxPlotItems data.Data)
-        | Column     (data, width) -> column width color (toDataPoints   data.Data)
-        | ErrorColumn data         -> failwithf "nyi: ErrorColumn: %A"   data
-        | Scatter     data         -> scatter      color (toDataPoints   data.Data)
+        | Bar         (data, width) -> bar         width color (toFloats       data     )
+        | BoxPlot      data         -> boxplot           color (toBoxPlotItems data.Data)
+        | Column      (data, width) -> column      width color (toFloats       data     )
+        | ErrorColumn (data, width) -> errorColumn width color (toErrorItems   data.Data)
+        | Scatter      data         -> scatter           color (toDataPoints   data.Data)
 
     let from (xAxes : Axes.Axis[]) (yAxes : Axes.Axis[]) (x : Series) =
 

@@ -28,7 +28,7 @@ module Examples =
                 Series =
                     [|
                         {
-                            Series.Column 3.0 (BasicData [| 1.0..10.0 |]) with
+                            Series.Bar 2.0 (FloatData [| 1.0..10.0 |]) with
                                 Color = Color.Blue
                         }
                     |]
@@ -83,8 +83,8 @@ module Examples =
 
         {
             Chart.Default with
-                Title    = text "Title"
-                Subtitle = text "Subtitle"
+                Title    = text "Column"
+                Subtitle = text ""
 
                 XAxes =
                     [|
@@ -100,13 +100,39 @@ module Examples =
                 Series =
                     [|
                         {
-                            Series.Column 3.0 (BasicData [| 1.0..10.0 |]) with
+                            Series.Column 3.0 (FloatData [| 1.0..10.0 |]) with
                                 Color = Color.Blue
                         }
                     |]
         }
 
-    let errorColumn () = failwith "NotYetImplemented"
+    let errorColumn () =
+        let text x = { Text.Default with Value = x }
+
+        {
+            Chart.Default with
+                Title    = text "Error column"
+                Subtitle = text ""
+
+                XAxes =
+                    [|
+                        {
+                            Axis.DefaultX with
+                                Title = text "Categorical x-axis"
+                                AxisType = Categorical
+                        }
+                    |]
+
+                YAxes = [| { Axis.DefaultY with Title = text "Y axis" } |]
+
+                Series =
+                    [|
+                        {
+                            Series.ErrorColumn 3.0 (ErrorData ([| 1.0..10.0 |], [| 2.0..2.0..20.0 |])) with
+                                Color = Color.Green
+                        }
+                    |]
+        }
 
     let scatter () =
         let text x = { Text.Default with Value = x }
@@ -122,7 +148,7 @@ module Examples =
                 Series =
                     [|
                         {
-                            Series.Scatter (BasicData [| 2.5..5.0..97.5 |]) with
+                            Series.Scatter (ScatterData [| 2.5..5.0..97.5 |]) with
                                 Color = Color.Red
                         }
                     |]

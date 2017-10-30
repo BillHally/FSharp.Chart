@@ -29,12 +29,12 @@ let doubleSeriesExample () =
             Series =
                 [|
                     {
-                        Series.Column 3.0 (BasicData [| 1.0..10.0 |]) with
+                        Series.Column 3.0 (FloatData [| 1.0..10.0 |]) with
                             Color = Color.Blue
                     }
 
                     {
-                        Series.Scatter (BasicData [| 2.5..5.0..97.5 |]) with
+                        Series.Scatter (ScatterData [| 2.5..5.0..97.5 |]) with
                             Color = Color.Red
                             XAxisIndex = 1
                     }
@@ -46,7 +46,7 @@ let dateTimeTimeSpanExample () =
     let text x = { Text.Default with Value = x }
 
     let data =
-        BasicData
+        ScatterData
             (
                 ([| 1  ..10   |] |> Array.map (fun x -> System.DateTime(2017, 10, x))),
                 ([| 1.0..10.0 |] |> Array.map TimeSpan.FromMinutes)
