@@ -92,9 +92,11 @@ module Program =
         | Background         of Color
         | PlotAreaBackground of Color
         | SeriesType of SeriesType
+        | Export
 
-    let update msg (model : Model) =
+    let update export msg (model : Model) =
         match msg with
+        | Export   -> export model.Chart; model
         | Width  x -> { model with Width  = x }
         | Height x -> { model with Height = x }
         | Title  x ->
@@ -147,6 +149,8 @@ module Program =
             Background : Color
             PlotAreaBackground : Color
             SeriesType : SeriesType
+
+            ExportCommand : VmCmd<Msg>
         }
 
     let d =
@@ -161,6 +165,8 @@ module Program =
             Background = Color.Transparent
             PlotAreaBackground = Color.Transparent
             SeriesType = SeriesType.BoxPlot
+
+            ExportCommand = Vm.cmd Export
         }
 
     let bindToSource =
@@ -176,7 +182,9 @@ module Program =
             <@ d.SeriesType         @> |> Bind.twoWay (fun x -> x.SeriesType        ) SeriesType
 
             <@ d.PlotModel    @> |> Bind.oneWay (fun x -> x.Chart |> PlotModel.from)
+
+            <@ d.ExportCommand @> |> Bind.cmd
         ]
 
-    let applicationCore = Framework.basicApplication Model.Default update bindToSource
+    let applicationCore export = Framework.basicApplication Model.Default (update export) bindToSource
 

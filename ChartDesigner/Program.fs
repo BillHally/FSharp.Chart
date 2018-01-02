@@ -10,7 +10,7 @@ open Gjallarhorn.Bindable
 open FSharp.Chart.OxyPlot
 
 open ChartDesigner
-open ChartDesigner.ViewModels
+open FSharp.IO
 
 module WindowsConsole =
     open System.Runtime.InteropServices
@@ -22,14 +22,28 @@ module WindowsConsole =
     let attachToParentConsole () = AttachConsole ATTACH_PARENT_PROCESS
 
 type Application = XAML<"App.xaml">
-type MainWindow = XAML<"MainWindow.xaml">
+type MainWindowBase = XAML<"Views/MainWindow.xaml">
+
+type MainWindow() as this =
+    inherit MainWindowBase()
+
+    do
+        MainWindow.Instance <- this
+        MahApps.Metro.Controls.Dialogs.DialogParticipation.SetRegister(this, this)
+
+    static member val Instance = Unchecked.defaultof<MainWindow> with get, set
+
+let showMessage title text =
+    Dialogs.showMessage MainWindow.Instance title text
+
+let writeAllText = File.writeAllText showMessage
 
 [<STAThread>]
 [<EntryPoint>]
 let main argv =
     WindowsConsole.attachToParentConsole () |> ignore
     try
-        Framework.RunApplication (Application, MainWindow, Program.applicationCore)
+        Framework.RunApplication (Application, MainWindow, Program.applicationCore (Script.export Dialogs.saveFile writeAllText))
         0
     with
     | ex ->

@@ -1,5 +1,8 @@
 source https://www.nuget.org/api/v2
 
+framework: auto-detect
+
+# Libs and exes
 nuget Extended.Wpf.Toolkit 3.2.0
 nuget FAKE
 nuget FSharp.Core
@@ -10,3 +13,9 @@ nuget OxyPlot.Core 2.0.0-unstable1013 unstable
 nuget OxyPlot.Wpf  2.0.0-unstable1013 unstable
 nuget MahApps.Metro
 nuget System.ValueTuple 4.3.1
+
+# Tests
+nuget FsUnit
+nuget Microsoft.NET.Test.Sdk
+nuget nunit
+nuget NUnit3TestAdapter

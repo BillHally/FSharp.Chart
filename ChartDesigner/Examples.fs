@@ -63,8 +63,8 @@ module Examples =
                     [|
                         {
                             Axis.DefaultX with
-                                Minimum =  0.5
-                                Maximum = 10.5
+                                Minimum = Some  0.5
+                                Maximum = Some 10.5
                         }
                     |]
 
@@ -72,8 +72,8 @@ module Examples =
                     [|
                         {
                             Axis.DefaultY with
-                                Minimum =    0.0
-                                Maximum = 1275.0
+                                Minimum = Some    0.0
+                                Maximum = Some 1275.0
                         }
                     |]
         }

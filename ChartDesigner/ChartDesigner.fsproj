@@ -13,13 +13,18 @@
     <Compile Include="Converters.fs" />
     <Compile Include="Examples.fs" />
     <Compile Include="Core.fs" />
-    <Compile Include="ViewModels.fs" />
+    <Compile Include="FileFilter.fs" />
+    <Compile Include="IO.fs" />
+    <Compile Include="Script.fs" />
+    <Compile Include="Dialogs.fs" />
     <Compile Include="Program.fs" />
-    <Resource Include="MainWindow.xaml" />
-    <Resource Include="App.xaml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="App.xaml" />
+    <Resource Include="Views\MainWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FSharp.Chart.OxyPlot\FSharp.Chart.OxyPlot.fsproj" />

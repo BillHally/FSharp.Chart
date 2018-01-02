@@ -53,6 +53,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="0" Margin="5" Text="Chart" FontSize="16" FontWeight="Bold" />
+            <Button    Grid.Row="0" Grid.Column="1" Command="{Binding ExportCommand}" Content="Export" />
 
             <TextBlock Grid.Row="1" Grid.Column="0" Margin="5" Text="Title" />
             <TextBox   Grid.Row="1" Grid.Column="1" Margin="5" Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />

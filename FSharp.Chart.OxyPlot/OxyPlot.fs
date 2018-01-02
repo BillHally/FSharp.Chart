@@ -28,12 +28,12 @@ module Axis =
             | TimeSpan    -> Axes.TimeSpanAxis() :> Axes.Axis
 
         axis.Title      <- x.Title.Value
-        axis.TitleColor <- x.TitleColor   |> Color.from
+        axis.TitleColor <- x.Title.Color  |> Color.from
         axis.TextColor  <- x.TextColor    |> Color.from
         axis.Position   <- x.AxisPosition |> AxisPosition.from
 
-        if not (Double.IsNaN x.Minimum) then axis.Minimum <- x.Minimum
-        if not (Double.IsNaN x.Maximum) then axis.Maximum <- x.Maximum
+        x.Minimum |> Option.iter (fun x -> axis.Minimum <- x)
+        x.Maximum |> Option.iter (fun x -> axis.Maximum <- x)
 
         axis
 
@@ -128,7 +128,7 @@ module Series =
     let convert color x =
         match x with
         | Bar         (data, width) -> bar         width color (toFloats       data     )
-        | BoxPlot      data         -> boxplot           color (toBoxPlotItems data.Data)
+        | BoxPlot      data         -> boxplot           color (toBoxPlotItems data     )
         | Column      (data, width) -> column      width color (toFloats       data     )
         | ErrorColumn (data, width) -> errorColumn width color (toErrorItems   data.Data)
         | Scatter      data         -> scatter           color (toDataPoints   data.Data)

@@ -92,9 +92,6 @@ type BoxPlotItem =
         Outliers : float[]
     }
 
-type BoxPlotData(data : BoxPlotItem[]) =
-    member __.Data = data
-
 type AxisPosition =
     | Left
     | Right
@@ -144,38 +141,35 @@ type Axis =
     {
         AxisPosition : AxisPosition
         Title        : Text
-        TitleColor   : Color
         TextColor    : Color
         AxisType     : AxisType
-        Minimum      : float
-        Maximum      : float
+        Minimum      : Option<float>
+        Maximum      : Option<float>
     }
 
     static member DefaultX =
         {
             AxisPosition = Bottom
             Title        = Text.Default
-            TitleColor   = Color.Black
             TextColor    = Color.Black
             AxisType     = Linear
-            Minimum      = nan
-            Maximum      = nan
+            Minimum      = None
+            Maximum      = None
         }
 
     static member DefaultY =
         {
             AxisPosition = Left
             Title        = Text.Default
-            TitleColor   = Color.Black
             TextColor    = Color.Black
             AxisType     = Linear
-            Minimum      = nan
-            Maximum      = nan
+            Minimum      = None
+            Maximum      = None
         }
 
 type SeriesData =
     | Bar         of data : SimpleData * width : float
-    | BoxPlot     of data : BoxPlotData
+    | BoxPlot     of data : BoxPlotItem[]
     | Column      of data : SimpleData * width : float
     | ErrorColumn of data : ErrorData  * width : float
     | Scatter     of data : ScatterData
@@ -197,7 +191,7 @@ type Series =
         }
 
     static member Bar         width x = { Series.Default with SeriesData = (Bar          (x, width)) }
-    static member BoxPlot           x = { Series.Default with SeriesData = (BoxPlot (BoxPlotData x)) }
+    static member BoxPlot           x = { Series.Default with SeriesData = (BoxPlot      (x       )) }
     static member Column      width x = { Series.Default with SeriesData = (Column       (x, width)) }
     static member ErrorColumn width x = { Series.Default with SeriesData = (ErrorColumn  (x, width)) }
     static member Scatter           x = { Series.Default with SeriesData = (Scatter x)               }
