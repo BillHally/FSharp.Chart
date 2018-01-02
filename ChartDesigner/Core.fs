@@ -28,30 +28,30 @@ module Chart =
         { x with Title = { x.Title with Value = title } }
 
 type SeriesType =
-    | Bar
-    | BoxPlot
-    | Column
-    | ErrorColumn
-    | Scatter
+    | BarSeries
+    | BoxPlotSeries
+    | ColumnSeries
+    | ErrorColumnSeries
+    | ScatterSeries
 
     static member Items =
         [|
-            Bar
-            BoxPlot
-            Column
-            ErrorColumn
-            Scatter
+            BarSeries
+            BoxPlotSeries
+            ColumnSeries
+            ErrorColumnSeries
+            ScatterSeries
         |]
 
 module Program =
 
     let getExample =
         function
-        |   Bar         -> Examples.bar         ()
-        |   BoxPlot     -> Examples.boxplot     ()
-        |   Column      -> Examples.column      ()
-        |   ErrorColumn -> Examples.errorColumn ()
-        |   Scatter     -> Examples.scatter     ()
+        |   BarSeries         -> Examples.bar         ()
+        |   BoxPlotSeries     -> Examples.boxplot     ()
+        |   ColumnSeries      -> Examples.column      ()
+        |   ErrorColumnSeries -> Examples.errorColumn ()
+        |   ScatterSeries     -> Examples.scatter     ()
 
     type Model =
         {
@@ -73,7 +73,7 @@ module Program =
                 ProgramTitle = "Chart Designer"
                 Width        = 1500.0
                 Height       = 1000.0
-                SeriesType   = BoxPlot
+                SeriesType   = BoxPlotSeries
 
                 Chart = ChartDesigner.Examples.boxplot ()
 
@@ -164,7 +164,7 @@ module Program =
             Subtitle = ""
             Background = Color.Transparent
             PlotAreaBackground = Color.Transparent
-            SeriesType = SeriesType.BoxPlot
+            SeriesType = BoxPlotSeries
 
             ExportCommand = Vm.cmd Export
         }

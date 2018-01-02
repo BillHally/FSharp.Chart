@@ -75,6 +75,55 @@ let ``floatOptionToScript when passed "Some x" returns the expected String`` () 
     |> shouldEqual "Some 0.123"
 
 [<Test>]
+let ``seriesDataToScript`` () =
+    BoxPlot
+        [|
+            {
+                UpperWhisker = 1.234
+                BoxTop       = 2.345
+                Median       = 3.456
+                Mean         = 4.567
+                BoxBottom    = 5.678
+                LowerWhisker = 6.789
+
+                Outliers = [| 0.01; 0.02; 0.03; 0.04 |]
+            }
+        |]
+    |> Script.seriesDataToScript 5
+    |> shouldEqual
+        """let seriesData5 =
+    BoxPlot
+        [|
+            {
+                UpperWhisker = 1.234
+                BoxTop       = 2.345
+                Median       = 3.456
+                Mean         = 4.567
+                BoxBottom    = 5.678
+                LowerWhisker = 6.789
+
+                Outliers = [| 0.01; 0.02; 0.03; 0.04 |]
+            }
+        |]"""
+
+[<Test>]
+let ``seriesToScript always formats all properties except for SeriesData`` () =
+    {
+        SeriesData = BoxPlot [||]
+        Color      = Color.Green
+        XAxisIndex = 1
+        YAxisIndex = 2
+    }
+    |> Script.seriesToScript 7
+    |> shouldEqual
+        """{
+            SeriesData = seriesData7
+            Color      = Color.Green
+            XAxisIndex = 1
+            YAxisIndex = 2
+        }"""
+
+[<Test>]
 let ``toScript when passed a Chart returns the expected String`` () =
     {
         Title = { Value = "The title"; Font = Font.Default; Color = Color.Black }
@@ -128,7 +177,7 @@ open FSharp.Chart
 open FSharp.Chart.OxyPlot
 
 // TODO: Replace this hard-coded data
-let seriesData = [||]
+
 
 let chart =
     {
@@ -149,7 +198,7 @@ let chart =
 
         YAxes = [| Axis.DefaultY |]
 
-        Series = seriesData
+        Series = [||]
     }
 
 let plotModel = PlotModel.from chart

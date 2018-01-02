@@ -2,6 +2,7 @@
 
 open System
 open System.Drawing
+open System.IO
 
 open FSharp.IO
 open FSharp.Chart
@@ -51,39 +52,90 @@ let axisToScript (x : Axis) =
             (floatOptionToScript x.Minimum)
             (floatOptionToScript x.Maximum)
 
-let seriesToScript (x : Series) =
+let formatArrayContents empty before after =
+    function
+    | "" -> empty
+    | x  -> sprintf "%s%s%s" before x after
+
+let boxPlotItemToScript x =
     sprintf
         """
-        {
-            SeriesData = %A
+            {
+                UpperWhisker = %.3f
+                BoxTop       = %.3f
+                Median       = %.3f
+                Mean         = %.3f
+                BoxBottom    = %.3f
+                LowerWhisker = %.3f
+
+                Outliers = %s
+            }"""
+        x.UpperWhisker
+        x.BoxTop
+        x.Median
+        x.Mean
+        x.BoxBottom
+        x.LowerWhisker
+
+        (
+            x.Outliers
+            |> Seq.map (sprintf "%.2f")
+            |> String.concat "; "
+            |> formatArrayContents " [||]" "[| " " |]"
+        )
+
+let seriesDataToScript n seriesData =
+    match seriesData with
+    | Bar         (simpleData, width) -> sprintf "Bar (%A, %.2f)" simpleData width
+    | BoxPlot     (boxPlotItems     ) ->
+        sprintf
+            """BoxPlot%s"""
+            (
+                boxPlotItems
+                |> Seq.map boxPlotItemToScript
+                |> String.concat "\r\n"
+                |> formatArrayContents "[||]" "\r\n        [|" "\r\n        |]"
+            )
+
+    | Column      (simpleData, width) -> sprintf "Column (%A, %.2f)" simpleData width
+    | ErrorColumn (errorData,  width) -> sprintf "ErrorColumn (%A, %.2f)" errorData width
+    | Scatter     (scatterData      ) -> sprintf "Scatter %A" scatterData
+    |> sprintf
+        """let seriesData%d =
+    %s"""
+        n
+
+let multipleSeriesDataToScript =
+    Seq.mapi (fun i x -> seriesDataToScript i x)
+    >> String.concat "\r\n"
+
+let seriesToScript n (x : Series) =
+    sprintf
+        """{
+            SeriesData = seriesData%d
             Color      = %s
             XAxisIndex = %d
             YAxisIndex = %d
         }"""
 
-        x.SeriesData
+        n
         (colorToScript x.Color)
         x.XAxisIndex
         x.YAxisIndex
 
-let formatArrayContents before after =
-    function
-    | "" -> "[||]"
-    | x  -> sprintf "%s%s%s" before x after
-
 let axesToScript =
     Seq.map axisToScript
     >> String.concat "\r\n"
-    >> formatArrayContents "[| " " |]"
+    >> formatArrayContents "[||]" "[| " " |]"
 
 let multipleSeriesToScript =
-    Array.map seriesToScript
+    Array.mapi (fun i x -> seriesToScript i x)
     >> String.concat "; "
-    >> formatArrayContents "\r\n    [|" "\r\n    |]"
+    >> formatArrayContents "[||]" "\r\n        [|" "\r\n        |]"
 
 let toScript (x : Chart) =
     sprintf
-        """//#I "<full path to the directory containing ChartDesigner>"
+        """#I @"%s"
 #r "WindowsBase"
 #r "PresentationCore"
 #r "PresentationFramework"
@@ -103,7 +155,7 @@ open FSharp.Chart
 open FSharp.Chart.OxyPlot
 
 // TODO: Replace this hard-coded data
-let seriesData = %s
+%s
 
 let chart =
     {
@@ -117,13 +169,19 @@ let chart =
 
         YAxes = %s
 
-        Series = seriesData
+        Series = %s
     }
 
 let plotModel = PlotModel.from chart
 System.Windows.Window(Content = PlotView(Model = plotModel)).ShowDialog() |> ignore
 """
-        (multipleSeriesToScript x.Series)
+        (Path.GetDirectoryName (Reflection.Assembly.GetExecutingAssembly().Location))
+
+        (
+            x.Series
+            |> Array.map (fun x -> x.SeriesData)
+            |> multipleSeriesDataToScript
+        )
 
         (textToScript x.Title)
         (textToScript x.Subtitle)
@@ -133,6 +191,8 @@ System.Windows.Window(Content = PlotView(Model = plotModel)).ShowDialog() |> ign
 
         (axesToScript x.XAxes)
         (axesToScript x.YAxes)
+
+        (multipleSeriesToScript x.Series)
 
 let export saveFile writeAllText x =
     [|
