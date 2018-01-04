@@ -7,6 +7,47 @@ open System.IO
 open FSharp.IO
 open FSharp.Chart
 
+let formatArrayContents empty before after =
+    function
+    | "" -> empty
+    | x  -> sprintf "%s%s%s" before x after
+
+let formatArrayContentsOnSingleLine = formatArrayContents "[||]" "[| " " |]"
+
+let formatArrayContentsOnMultipleLines =
+    formatArrayContents
+        "[||]"
+        "\r\n                [|\r\n                    "
+        "\r\n                |]"
+
+let simpleDataToScript sep formatArrayContents =
+    function
+    | FloatData xs ->
+        xs
+        |> Seq.map (sprintf "%.2f")
+        |> String.concat sep
+        |> formatArrayContents
+        |> sprintf "FloatData%s"
+    | DateTimeData xs ->
+        xs
+        |> Seq.map (sprintf "%A")
+        |> String.concat sep
+        |> formatArrayContents
+        |> sprintf "DateTimeData%s"
+    | TimeSpanData xs ->
+        xs
+        |> Seq.map (sprintf "%A")
+        |> String.concat sep
+        |> formatArrayContents
+        |> sprintf "TimeSpanData%s"
+
+let simpleDataToScriptOnSingleLine = simpleDataToScript "; " formatArrayContentsOnSingleLine
+
+let simpleDataToScriptOnMultipleLines =
+    simpleDataToScript
+        "\r\n                    "
+        formatArrayContentsOnMultipleLines
+
 let colorToScript (x : Color) =
     if x.IsKnownColor then
         sprintf "Color.%s" x.Name
@@ -52,11 +93,6 @@ let axisToScript (x : Axis) =
             (floatOptionToScript x.Minimum)
             (floatOptionToScript x.Maximum)
 
-let formatArrayContents empty before after =
-    function
-    | "" -> empty
-    | x  -> sprintf "%s%s%s" before x after
-
 let boxPlotItemToScript x =
     sprintf
         """
@@ -86,7 +122,15 @@ let boxPlotItemToScript x =
 
 let seriesDataToScript n seriesData =
     match seriesData with
-    | Bar         (simpleData, width) -> sprintf "Bar (%A, %.2f)" simpleData width
+    | Bar (simpleData, width) ->
+        sprintf """Bar
+        (
+            %s,
+            %.2f
+        )"""
+            (simpleDataToScriptOnMultipleLines simpleData)
+            width
+
     | BoxPlot     (boxPlotItems     ) ->
         sprintf
             """BoxPlot%s"""

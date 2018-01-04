@@ -63,19 +63,39 @@ let ``axisToScript when passed a non-default axis returns the expected String`` 
                 }"""
 
 [<Test>]
-let ``floatOptionToScript when passed none returns the expected String`` () =
+let ``floatOptionToScript when passed none returns the expected string`` () =
     None
     |> Script.floatOptionToScript
     |> shouldEqual "None"
 
 [<Test>]
-let ``floatOptionToScript when passed "Some x" returns the expected String`` () =
+let ``floatOptionToScript when passed "Some x" returns the expected string`` () =
     Some 0.123
     |> Script.floatOptionToScript
     |> shouldEqual "Some 0.123"
 
 [<Test>]
-let ``seriesDataToScript`` () =
+let ``seriesDataToScript, when passed Bar returns the expected string`` () =
+    Bar
+        (
+            FloatData [| 12.34; 56.78 |],
+            1.23
+        )
+    |> Script.seriesDataToScript 5
+    |> shouldEqual
+        """let seriesData5 =
+    Bar
+        (
+            FloatData
+                [|
+                    12.34
+                    56.78
+                |],
+            1.23
+        )"""
+
+[<Test>]
+let ``seriesDataToScript, when passed BoxPlot, returns the expected string`` () =
     BoxPlot
         [|
             {
