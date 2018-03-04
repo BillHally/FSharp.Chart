@@ -170,8 +170,8 @@ module Program =
         }
 
     let bindToSource =
-        Component.fromBindings<Model, Msg> [
-            <@ d.ProgramTitle @> |> Bind.oneWay (fun x -> x.ProgramTitle)
+        Component.create [
+            <@ d.ProgramTitle @> |> Bind.oneWay (fun (x : Model) -> x.ProgramTitle)
             <@ d.Width        @> |> Bind.twoWay (fun x -> x.Width)  Width  //Validated (fun m -> m.FirstName) notNullOrWhitespace FirstName
             <@ d.Height       @> |> Bind.twoWay (fun x -> x.Height) Height //Validated (fun m -> m.LastName) validLast LastName
 
@@ -186,5 +186,5 @@ module Program =
             <@ d.ExportCommand @> |> Bind.cmd
         ]
 
-    let applicationCore export = Framework.basicApplication Model.Default (update export) bindToSource
+    let applicationCore export = Framework.application Model.Default (update export) bindToSource Nav.empty
 

@@ -5,10 +5,10 @@ framework: auto-detect
 # Libs and exes
 nuget Extended.Wpf.Toolkit 3.2.0
 nuget FAKE
-nuget FSharp.Core
+nuget FSharp.Core 4.3.4
 nuget FSharp.NET.Sdk
 nuget FsXaml.Wpf
-nuget Gjallarhorn.Bindable.Wpf 1.0.0-beta4
+nuget Gjallarhorn.Bindable.Wpf beta
 nuget OxyPlot.Core 2.0.0-unstable1013 unstable
 nuget OxyPlot.Wpf  2.0.0-unstable1013 unstable
 nuget MahApps.Metro

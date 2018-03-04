@@ -42,8 +42,9 @@ let writeAllText = File.writeAllText showMessage
 [<EntryPoint>]
 let main argv =
     WindowsConsole.attachToParentConsole () |> ignore
+    let __ = Application()
     try
-        Framework.RunApplication (Application, MainWindow, Program.applicationCore (Script.export Dialogs.saveFile writeAllText))
+        Framework.RunApplication (Navigation.singleViewFromWindow MainWindow, Program.applicationCore (Script.export Dialogs.saveFile writeAllText))
         0
     with
     | ex ->
