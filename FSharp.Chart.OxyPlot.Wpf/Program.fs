@@ -29,13 +29,13 @@ let doubleSeriesExample () =
             Series =
                 [|
                     {
-                        Series.Column 3.0 (FloatData [| 1.0..10.0 |]) with
-                            Color = Color.Blue
+                        Series.Column 3.0 (ColumnData [| for x in 1..10 do yield (if x % 2 = 0 then "Even" else "Odd"), float x |]) with
+                            Color = Some Color.Blue
                     }
 
                     {
                         Series.Scatter (ScatterData [| 2.5..5.0..97.5 |]) with
-                            Color = Color.Red
+                            Color = Some Color.Red
                             XAxisIndex = 1
                     }
                 |]
@@ -59,7 +59,7 @@ let dateTimeTimeSpanExample () =
             XAxes = [| { Axis.DefaultX with Title = text "X axis"; AxisType = AxisType.DateTime } |]
             YAxes = [| { Axis.DefaultY with Title = text "Y axis"; AxisType = AxisType.TimeSpan } |]
 
-            Series = [| { Series.Scatter data with Color = Color.Blue } |]
+            Series = [| { Series.Scatter data with Color = Some Color.Blue } |]
     }
     |> FSharp.Chart.OxyPlot.Wpf.Chart.plot
 
@@ -87,7 +87,7 @@ let boxPlotExample () =
         Chart.Default with
             Title = text "Boxplot"
 
-            Series = [| { Series.BoxPlot data with Color = Color.AliceBlue } |]
+            Series = [| { Series.BoxPlot data with Color = Some Color.AliceBlue } |]
     }
     |> FSharp.Chart.OxyPlot.Wpf.Chart.plot
 

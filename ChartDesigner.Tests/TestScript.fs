@@ -15,12 +15,14 @@ module String =
 [<Test>]
 let ``colorToScript when passed a KnownColor returns the expected String`` () =
     Color.AliceBlue
+    |> Some
     |> Script.colorToScript
     |> shouldEqual "Color.AliceBlue"
 
 [<Test>]
 let ``colorToScript when passed a non-KnownColor returns the expected String`` () =
     Color.FromArgb(1, 2, 3, 4)
+    |> Some
     |> Script.colorToScript
     |> shouldEqual "Color.FromArgb(1, 2, 3, 4)"
 
@@ -43,14 +45,14 @@ let ``axisToScript when passed a non-default axis returns the expected String`` 
             {
                 Text.Value = "Axis title"
                 Font = Font.Default
-                Color = Color.Black
+                Color = Some Color.Black
             }
 
         AxisPosition = Top
-        TextColor = Color.Orange
-        AxisType = Categorical
-        Minimum = Some 0.1
-        Maximum = Some 5.0
+        TextColor    = Some Color.Orange
+        AxisType     = Categorical
+        Minimum      = Some 0.1
+        Maximum      = Some 5.0
     }
     |> Script.axisToScript
     |> shouldEqual """{
@@ -129,16 +131,18 @@ let ``seriesDataToScript, when passed BoxPlot, returns the expected string`` () 
 [<Test>]
 let ``seriesToScript always formats all properties except for SeriesData`` () =
     {
+        Name       = "Series 1"
         SeriesData = BoxPlot [||]
-        Color      = Color.Green
+        Color      = Some Color.Green
         XAxisIndex = 1
         YAxisIndex = 2
     }
     |> Script.seriesToScript 7
     |> shouldEqual
         """{
+            Name       = "Series 1"
             SeriesData = seriesData7
-            Color      = Color.Green
+            Color      = Some Color.Green
             XAxisIndex = 1
             YAxisIndex = 2
         }"""
@@ -146,10 +150,10 @@ let ``seriesToScript always formats all properties except for SeriesData`` () =
 [<Test>]
 let ``toScript when passed a Chart returns the expected String`` () =
     {
-        Title = { Value = "The title"; Font = Font.Default; Color = Color.Black }
-        Subtitle = { Value = "The subtitle"; Font = Font.Default; Color = Color.Black }
-        Background = Color.FromArgb(1, 2, 3, 4)
-        PlotAreaBackground = Color.FromArgb(5, 6, 7, 8)
+        Title              = { Value = "The title"   ; Font = Font.Default; Color = Some Color.Black }
+        Subtitle           = { Value = "The subtitle"; Font = Font.Default; Color = Some Color.Black }
+        Background         = Some (Color.FromArgb(1, 2, 3, 4))
+        PlotAreaBackground = Some (Color.FromArgb(5, 6, 7, 8))
 
         XAxes =
             [|
@@ -157,15 +161,15 @@ let ``toScript when passed a Chart returns the expected String`` () =
                     Title =
                         {
                             Text.Value = "Axis title"
-                            Font = Font.Default
-                            Color = Color.Black
+                            Font       = Font.Default
+                            Color      = Some Color.Black
                         }
 
                     AxisPosition = Top
-                    TextColor = Color.Orange
-                    AxisType = Categorical
-                    Minimum = Some 0.1
-                    Maximum = Some 5.0
+                    TextColor    = Some Color.Orange
+                    AxisType     = Categorical
+                    Minimum      = Some 0.1
+                    Maximum      = Some 5.0
                 }
             |]
 
@@ -204,13 +208,13 @@ let chart =
         Title    = { Value = "The title"; Font = Font.Default; Color = Color.Black }
         Subtitle = { Value = "The subtitle"; Font = Font.Default; Color = Color.Black }
 
-        Background = Color.FromArgb(1, 2, 3, 4)
-        PlotAreaBackground = Color.FromArgb(5, 6, 7, 8)
+        Background = Some (Color.FromArgb(1, 2, 3, 4))
+        PlotAreaBackground = Some (Color.FromArgb(5, 6, 7, 8))
 
         XAxes = [| {
                     AxisPosition = Top
                     Title        = { Value = "Axis title"; Font = Font.Default; Color = Color.Black }
-                    TextColor    = Color.Orange
+                    TextColor    = Some Color.Orange
                     AxisType     = Categorical
                     Minimum      = Some 0.100
                     Maximum      = Some 5.000

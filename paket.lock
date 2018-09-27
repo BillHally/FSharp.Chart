@@ -20,6 +20,7 @@ NUGET
       FSharp.Core (>= 4.0.0.1)
       Gjallarhorn (>= 1.1)
       Gjallarhorn.Bindable (>= 1.0.0-beta5)
+
     MahApps.Metro (1.5)
     Microsoft.CodeCoverage (1.0.3)
     Microsoft.NET.Test.Sdk (15.5)

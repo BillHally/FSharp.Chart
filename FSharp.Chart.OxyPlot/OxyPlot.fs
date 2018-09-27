@@ -8,7 +8,10 @@ open OxyPlot
 open FSharp.Chart
 
 module Color =
-    let from (x : System.Drawing.Color) = OxyColor.FromArgb(x.A, x.R, x.G, x.B)
+    let from (x : Option<System.Drawing.Color>) =
+        match x with
+        | Some x -> OxyColor.FromArgb(x.A, x.R, x.G, x.B)
+        | None   -> OxyColors.Automatic
 
 module AxisPosition =
     let from =
@@ -18,19 +21,34 @@ module AxisPosition =
         | AxisPosition.Top    -> Axes.AxisPosition.Top
         | AxisPosition.Right  -> Axes.AxisPosition.Right
 
+module FontWeight =
+    let from =
+        function
+        | Bold   -> FontWeights.Bold
+        | Normal -> FontWeights.Normal
+        | Italic -> FontWeights.Normal // Italic is not supported by Oxyplot
+
 module Axis =
-    let from (x : Axis) : Axes.Axis =
+    let from categories numberOfSeries (x : Axis) : Axes.Axis =
         let axis =
             match x.AxisType with
-            | Categorical -> Axes.CategoryAxis() :> Axes.Axis
+            | Categorical ->
+                // TODO: group the categories in some way, on order to differentiate between
+                //       different categorical axes
+                let axis = Axes.CategoryAxis()
+                categories |> Array.iter axis.ActualLabels.Add
+                axis.GapWidth <- 1.0 / float numberOfSeries
+                axis :> Axes.Axis
             | DateTime    -> Axes.DateTimeAxis() :> Axes.Axis
             | Linear      -> Axes.LinearAxis  () :> Axes.Axis
             | TimeSpan    -> Axes.TimeSpanAxis() :> Axes.Axis
 
-        axis.Title      <- x.Title.Value
-        axis.TitleColor <- x.Title.Color  |> Color.from
-        axis.TextColor  <- x.TextColor    |> Color.from
-        axis.Position   <- x.AxisPosition |> AxisPosition.from
+        axis.Title           <- x.Title.Value
+        axis.TitleFontSize   <- x.Title.Font.Size  |> float
+        axis.TitleFontWeight <- x.Title.Font.Style |> FontWeight.from
+        axis.TitleColor      <- x.Title.Color      |> Color.from
+        axis.TextColor       <- x.TextColor        |> Color.from
+        axis.Position        <- x.AxisPosition     |> AxisPosition.from
 
         x.Minimum |> Option.iter (fun x -> axis.Minimum <- x)
         x.Maximum |> Option.iter (fun x -> axis.Maximum <- x)
@@ -43,6 +61,10 @@ module Series =
         | FloatData    xs -> xs
         | DateTimeData xs -> xs |> Array.map Axes.DateTimeAxis.ToDouble
         | TimeSpanData xs -> xs |> Array.map Axes.TimeSpanAxis.ToDouble
+
+    let private toNamedFloats =
+        function
+        | NamedFloats xs -> xs
 
     let private toDataPoints =
         function
@@ -110,8 +132,17 @@ module Series =
         OxyPlot.Series.BoxPlotSeries(Fill = color, ItemsSource = xs)
         :> OxyPlot.Series.XYAxisSeries
 
-    let private column width color xs =
-        let xs = xs |> Array.map (fun value -> OxyPlot.Series.ColumnItem(value))
+    let private column width color categories xs =
+        let xs =
+            xs
+            |> Array.map
+                (
+                    fun (category, value) ->
+                        match categories |> Array.tryFindIndex ((=) category) with
+                        | None -> OxyPlot.Series.ColumnItem(value)
+                        | Some categoryIndex -> OxyPlot.Series.ColumnItem(value, categoryIndex)
+                )
+
         let s = OxyPlot.Series.ColumnSeries(FillColor = color, ColumnWidth = width, ItemsSource = xs)
 //        s.Items.AddRange (xs |> Array.map (fun d -> OxyPlot.Series.ColumnItem(d)))
         s :> OxyPlot.Series.XYAxisSeries
@@ -125,15 +156,15 @@ module Series =
         OxyPlot.Series.ScatterSeries(MarkerFill = color, ItemsSource = xs, DataFieldX = "X", DataFieldY = "Y")
         :> OxyPlot.Series.XYAxisSeries
 
-    let convert color x =
+    let convert categories color x =
         match x with
-        | Bar         (data, width) -> bar         width color (toFloats       data     )
-        | BoxPlot      data         -> boxplot           color (toBoxPlotItems data     )
-        | Column      (data, width) -> column      width color (toFloats       data     )
-        | ErrorColumn (data, width) -> errorColumn width color (toErrorItems   data.Data)
-        | Scatter      data         -> scatter           color (toDataPoints   data.Data)
+        | Bar         (data, width) -> bar         width color            (toFloats       data     )
+        | BoxPlot      data         -> boxplot           color            (toBoxPlotItems data     )
+        | ErrorColumn (data, width) -> errorColumn width color            (toErrorItems   data.Data)
+        | Scatter      data         -> scatter           color            (toDataPoints   data.Data)
+        | Column      (data, width) -> column      width color categories (toNamedFloats  data.Data)
 
-    let from (xAxes : Axes.Axis[]) (yAxes : Axes.Axis[]) (x : Series) =
+    let from categories (xAxes : Axes.Axis[]) (yAxes : Axes.Axis[]) (x : Series) =
 
         let ensureAxisKeys baseKey (axes : Axes.Axis[]) =
             axes |> Array.iteri (fun n axis -> if axis.Key = null then axis.Key <- sprintf "%s.%d" baseKey n)
@@ -141,7 +172,9 @@ module Series =
         ensureAxisKeys "X" xAxes
         ensureAxisKeys "Y" yAxes
 
-        let series = x.SeriesData |> convert (Color.from x.Color)
+        let series = x.SeriesData |> convert categories (Color.from x.Color)
+        series.Title <- x.Name
+
         if x.XAxisIndex >= 0 then series.XAxisKey <- xAxes.[x.XAxisIndex].Key
         if x.YAxisIndex >= 0 then series.YAxisKey <- yAxes.[x.YAxisIndex].Key
 
@@ -174,12 +207,25 @@ module PlotModel =
                     PlotAreaBackground = Color.from chart.PlotAreaBackground
                 )
 
-        let xAxes = chart.XAxes |> Array.map Axis.from |> setPositionTiers
+        let categories =
+            chart.Series
+            |> Array.choose
+                (
+                    fun series ->
+                        match series.SeriesData with
+                        | Column (data, _) -> Some data.Data
+                        | _ -> None
+                )
+            |> NamedData.getCategories
+
+        let numberOfSeries = chart.Series.Length
+
+        let xAxes = chart.XAxes |> Array.map (Axis.from categories numberOfSeries) |> setPositionTiers
         xAxes |> Array.iter plotModel.Axes.Add
 
-        let yAxes = chart.YAxes |> Array.map Axis.from |> setPositionTiers
+        let yAxes = chart.YAxes |> Array.map (Axis.from categories numberOfSeries) |> setPositionTiers
         yAxes |> Array.iter plotModel.Axes.Add
 
-        chart.Series |> Array.iter (Series.from xAxes yAxes >> plotModel.Series.Add)
+        chart.Series |> Array.iter (Series.from categories xAxes yAxes >> plotModel.Series.Add)
 
         plotModel

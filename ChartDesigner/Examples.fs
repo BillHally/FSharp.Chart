@@ -29,7 +29,7 @@ module Examples =
                     [|
                         {
                             Series.Bar 2.0 (FloatData [| 1.0..10.0 |]) with
-                                Color = Color.Blue
+                                Color = Some Color.Blue
                         }
                     |]
         }
@@ -57,7 +57,7 @@ module Examples =
             Chart.Default with
                 Title = text "Boxplot"
 
-                Series = [| { Series.BoxPlot data with Color = Color.AliceBlue } |]
+                Series = [| { Series.BoxPlot data with Color = Some Color.AliceBlue } |]
 
                 XAxes =
                     [|
@@ -100,8 +100,8 @@ module Examples =
                 Series =
                     [|
                         {
-                            Series.Column 3.0 (FloatData [| 1.0..10.0 |]) with
-                                Color = Color.Blue
+                            Series.Column 1.0 (ColumnData [| for x in 1..10 do yield (if x % 2 = 0 then "Even" else "Odd"), float x |]) with
+                                Color = Some Color.Blue
                         }
                     |]
         }
@@ -129,7 +129,7 @@ module Examples =
                     [|
                         {
                             Series.ErrorColumn 3.0 (ErrorData ([| 20.0..20.0..200.0 |], [| 2.0..2.0..20.0 |])) with
-                                Color = Color.Green
+                                Color = Some Color.Green
                         }
                     |]
         }
@@ -149,7 +149,7 @@ module Examples =
                     [|
                         {
                             Series.Scatter (ScatterData [| 2.5..5.0..97.5 |]) with
-                                Color = Color.Red
+                                Color = Some Color.Red
                         }
                     |]
         }

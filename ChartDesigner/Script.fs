@@ -48,16 +48,19 @@ let simpleDataToScriptOnMultipleLines =
         "\r\n                    "
         formatArrayContentsOnMultipleLines
 
-let colorToScript (x : Color) =
-    if x.IsKnownColor then
-        sprintf "Color.%s" x.Name
-    else
-        sprintf
-            "Color.FromArgb(%d, %d, %d, %d)"
-            x.A
-            x.R
-            x.G
-            x.B
+let colorToScript (x : Option<Color>) =
+    match x with
+    | Some x ->
+        if x.IsKnownColor then
+            sprintf "Some Color.%s" x.Name
+        else
+            sprintf
+                "Some (Color.FromArgb(%d, %d, %d, %d))"
+                x.A
+                x.R
+                x.G
+                x.B
+    | None -> "None"
 
 let floatOptionToScript =
     function
@@ -156,12 +159,14 @@ let multipleSeriesDataToScript =
 let seriesToScript n (x : Series) =
     sprintf
         """{
+            Name       = \"%s\"
             SeriesData = seriesData%d
             Color      = %s
             XAxisIndex = %d
             YAxisIndex = %d
         }"""
 
+        x.Name
         n
         (colorToScript x.Color)
         x.XAxisIndex

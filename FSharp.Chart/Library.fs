@@ -8,6 +8,10 @@ type SimpleData =
     | DateTimeData of DateTime[]
     | TimeSpanData of TimeSpan[]
 
+type NamedData =
+    | NamedFloats of (string * float)[]
+    // TODO: add others...
+
 type TupleData =
     | FloatFloat       of (float    *    float)[]
     | FloatDateTime    of (float    * DateTime)[]
@@ -80,6 +84,11 @@ type ErrorData private(data : DataWithErrors) =
 
     member __.Data = data
 
+type ColumnData private(data : NamedData) =
+    new(xs) = ColumnData(NamedFloats(xs))
+
+    member __.Data = data
+
 type BoxPlotItem =
     {
         UpperWhisker : float
@@ -121,14 +130,14 @@ type Text =
     {
         Value : string
         Font  : Font
-        Color : Color
+        Color : Option<Color>
     }
 
     static member Default =
         {
             Value = ""
             Font  = Font.Default
-            Color = Color.Black
+            Color = None
         }
 
 type AxisType =
@@ -141,7 +150,7 @@ type Axis =
     {
         AxisPosition : AxisPosition
         Title        : Text
-        TextColor    : Color
+        TextColor    : Option<Color>
         AxisType     : AxisType
         Minimum      : Option<float>
         Maximum      : Option<float>
@@ -151,7 +160,7 @@ type Axis =
         {
             AxisPosition = Bottom
             Title        = Text.Default
-            TextColor    = Color.Black
+            TextColor    = None
             AxisType     = Linear
             Minimum      = None
             Maximum      = None
@@ -161,7 +170,7 @@ type Axis =
         {
             AxisPosition = Left
             Title        = Text.Default
-            TextColor    = Color.Black
+            TextColor    = None
             AxisType     = Linear
             Minimum      = None
             Maximum      = None
@@ -170,22 +179,24 @@ type Axis =
 type SeriesData =
     | Bar         of data : SimpleData * width : float
     | BoxPlot     of data : BoxPlotItem[]
-    | Column      of data : SimpleData * width : float
+    | Column      of data : ColumnData * width : float
     | ErrorColumn of data : ErrorData  * width : float
     | Scatter     of data : ScatterData
 
 type Series =
     {
+        Name       : string
         SeriesData : SeriesData
-        Color      : Color
+        Color      : Option<Color>
         XAxisIndex : int
         YAxisIndex : int
     }
 
     static member Default =
         {
+            Name       = ""
             SeriesData = Scatter (ScatterData([||] : float[]))
-            Color      = Color.Black
+            Color      = None
             XAxisIndex = -1
             YAxisIndex = -1
         }
@@ -201,8 +212,8 @@ type Chart =
         Title    : Text
         Subtitle : Text
 
-        Background         : Color
-        PlotAreaBackground : Color
+        Background         : Option<Color>
+        PlotAreaBackground : Option<Color>
 
         XAxes : Axis[]
         YAxes : Axis[]
@@ -215,10 +226,24 @@ type Chart =
             Title    = Text.Default
             Subtitle = Text.Default
 
-            Background         = Color.Transparent
-            PlotAreaBackground = Color.Transparent
+            Background         = Some Color.Transparent
+            PlotAreaBackground = Some Color.Transparent
 
             XAxes  = [||]
             YAxes  = [||]
             Series = [||]
         }
+
+module NamedData =
+    let getCategories xs =
+        xs
+        |> Seq.collect
+            (
+                function
+                | NamedFloats xs ->
+                    xs
+                    |> Seq.map fst
+            )
+        |> Seq.sort
+        |> Seq.distinct
+        |> Array.ofSeq

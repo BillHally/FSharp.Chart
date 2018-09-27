@@ -115,13 +115,13 @@ module Program =
             {
                 model with
                     Background = x
-                    Chart = Chart.setBackground x model.Chart
+                    Chart = Chart.setBackground (Some x) model.Chart
             }
         | PlotAreaBackground x ->
             {
                 model with
                     PlotAreaBackground = x
-                    Chart = Chart.setPlotAreaBackground x model.Chart
+                    Chart = Chart.setPlotAreaBackground (Some x) model.Chart
             }
         | SeriesType x ->
             {
@@ -132,8 +132,8 @@ module Program =
                         |> getExample
                         |> Chart.setTitle              model.Title
                         |> Chart.setSubtitle           model.Subtitle
-                        |> Chart.setBackground         model.Background
-                        |> Chart.setPlotAreaBackground model.PlotAreaBackground
+                        |> Chart.setBackground         (Some model.Background)
+                        |> Chart.setPlotAreaBackground (Some model.PlotAreaBackground)
             }
 
     [<CLIMutable>]
