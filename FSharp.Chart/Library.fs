@@ -228,6 +228,8 @@ type Legend =
         Title    : Text
         Position : Position
         Location : Location
+
+        Font : Font
     }
 
     static member Default =
@@ -235,6 +237,7 @@ type Legend =
             Title    = Text.Default
             Position = RightCenter
             Location = Outside
+            Font     = Font.Default
         }
 
 type Chart =

@@ -48,13 +48,19 @@ module LegendPlacement =
 
 module Legend =
     let set (legend : Legend) (plotModel : PlotModel) =
-        plotModel.LegendTitle     <- legend.Title.Value
-        plotModel.LegendPosition  <- LegendPosition.from legend.Position
+        plotModel.LegendTitle           <- legend.Title.Value
+        plotModel.LegendTitleFont       <- legend.Title.Font.Name
+        plotModel.LegendTitleFontSize   <- float legend.Title.Font.Size
+        plotModel.LegendTitleFontWeight <- FontWeight.from legend.Title.Font.Style
+
+        plotModel.LegendPosition  <- LegendPosition.from  legend.Position
         plotModel.LegendPlacement <- LegendPlacement.from legend.Location
 
-        plotModel.LegendFont <- legend.Title.Font.Name // Use "courier" if you want monospaced
+        plotModel.LegendSymbolMargin <-  2.0
+        plotModel.LegendSymbolLength <- float legend.Font.Size * 2.0
+        plotModel.LegendItemSpacing  <- float legend.Font.Size * 1.5
+        plotModel.LegendFont         <- legend.Font.Name
 
-        
 module Axis =
     let from categories numberOfSeries (x : Axis) : Axes.Axis =
         let axis =
@@ -131,13 +137,24 @@ module Series =
             | TimeSpanDateTime xys -> xys |> Array.map (fun (x, y) -> OxyPlot.Series.ErrorColumnItem(Axes.TimeSpanAxis.ToDouble x, Axes.DateTimeAxis.ToDouble y))
             | TimeSpanTimeSpan xys -> xys |> Array.map (fun (x, y) -> OxyPlot.Series.ErrorColumnItem(Axes.TimeSpanAxis.ToDouble x, Axes.TimeSpanAxis.ToDouble y))
 
-    let private toBoxPlotItems numberOfSeries seriesIndex (xs : BoxPlotItem[]) =
+    let private toBoxPlotItems (categories : string[]) numberOfSeries seriesIndex (xs : BoxPlotItem[]) =
         let offset = - 0.5 + 1.0 / float numberOfSeries * (float seriesIndex + 0.5)
 
         xs
         |> Array.mapi
             (
                 fun i x ->
+                    let i =
+                        if categories |> Array.isEmpty then
+                            i
+                        else
+                            match x.Category with
+                            | Some category ->
+                                match categories |> Array.tryFindIndex ((=) category) with
+                                | Some n -> n
+                                | None   -> failwithf "ERROR: failed to find category \%A in known categories: %A" category categories
+                            | None -> failwithf "ERROR: item has no category, but the following categories were specified: %A" categories
+
                     OxyPlot.Series.BoxPlotItem
                         (
                             float i + offset,
@@ -189,11 +206,11 @@ module Series =
 
     let convert categories color numberOfSeries seriesIndex x =
         match x with
-        | Bar         (data, width) -> bar         width          color            (toFloats                                  data     )
-        | BoxPlot      data         -> boxplot     numberOfSeries color            (toBoxPlotItems numberOfSeries seriesIndex data     )
-        | ErrorColumn (data, width) -> errorColumn width          color            (toErrorItems                              data.Data)
-        | Scatter      data         -> scatter                    color            (toDataPoints                              data.Data)
-        | Column      (data, width) -> column      width          color categories (toNamedFloats                             data.Data)
+        | Bar         (data, width) -> bar         width          color            (toFloats                                             data     )
+        | BoxPlot      data         -> boxplot     numberOfSeries color            (toBoxPlotItems categories numberOfSeries seriesIndex data     )
+        | ErrorColumn (data, width) -> errorColumn width          color            (toErrorItems                                         data.Data)
+        | Scatter      data         -> scatter                    color            (toDataPoints                                         data.Data)
+        | Column      (data, width) -> column      width          color categories (toNamedFloats                                        data.Data)
 
     let from categories (xAxes : Axes.Axis[]) (yAxes : Axes.Axis[]) numberOfSeries seriesIndex (x : Series) =
 
