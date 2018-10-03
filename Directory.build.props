@@ -1,0 +1,10 @@
+<Project>
+    <PropertyGroup>
+        <!-- Put anything you want to always be set for all projects here -->
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(NCRUNCH)' == '1' ">
+        <PaketRestoreDisabled>True</PaketRestoreDisabled>
+    </PropertyGroup>
+</Project>
