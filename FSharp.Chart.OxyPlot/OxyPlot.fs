@@ -58,8 +58,14 @@ module Legend =
 
         plotModel.LegendSymbolMargin <-  2.0
         plotModel.LegendSymbolLength <- float legend.Font.Size * 2.0
-        plotModel.LegendItemSpacing  <- float legend.Font.Size * 1.5
+
+        plotModel.LegendLineSpacing  <- float legend.Font.Size * 0.75
+
         plotModel.LegendFont         <- legend.Font.Name
+        plotModel.LegendFontSize     <- float legend.Font.Size
+        plotModel.LegendFontWeight   <- FontWeight.from legend.Font.Style
+
+        plotModel.LegendPadding <- float legend.Font.Size
 
 module Axis =
     let from categories numberOfSeries (x : Axis) : Axes.Axis =
