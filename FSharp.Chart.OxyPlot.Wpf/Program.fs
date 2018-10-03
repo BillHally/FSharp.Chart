@@ -72,6 +72,7 @@ let boxPlotExample () =
             (
                 fun x ->
                     {
+                        Category     = Some (string x)
                         UpperWhisker = x
                         BoxTop       = x * 0.9
                         Median       = x * 0.6

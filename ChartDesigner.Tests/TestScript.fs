@@ -17,14 +17,14 @@ let ``colorToScript when passed a KnownColor returns the expected String`` () =
     Color.AliceBlue
     |> Some
     |> Script.colorToScript
-    |> shouldEqual "Color.AliceBlue"
+    |> shouldEqual "Some Color.AliceBlue"
 
 [<Test>]
 let ``colorToScript when passed a non-KnownColor returns the expected String`` () =
     Color.FromArgb(1, 2, 3, 4)
     |> Some
     |> Script.colorToScript
-    |> shouldEqual "Color.FromArgb(1, 2, 3, 4)"
+    |> shouldEqual "Some (Color.FromArgb(1, 2, 3, 4))"
 
 [<Test>]
 let ``axisToScript when passed Axis.DefaultX returns the expected String`` () =
@@ -43,12 +43,12 @@ let ``axisToScript when passed a non-default axis returns the expected String`` 
     {
         Title =
             {
-                Text.Value = "Axis title"
+                Value = "Axis title"
                 Font = Font.Default
                 Color = Some Color.Black
             }
 
-        AxisPosition = Top
+        AxisPosition = TopAxis
         TextColor    = Some Color.Orange
         AxisType     = Categorical
         Minimum      = Some 0.1
@@ -56,9 +56,9 @@ let ``axisToScript when passed a non-default axis returns the expected String`` 
     }
     |> Script.axisToScript
     |> shouldEqual """{
-                    AxisPosition = Top
-                    Title        = { Value = "Axis title"; Font = Font.Default; Color = Color.Black }
-                    TextColor    = Color.Orange
+                    AxisPosition = TopAxis
+                    Title        = { Value = "Axis title"; Font = Font.Default; Color = Some Color.Black }
+                    TextColor    = Some Color.Orange
                     AxisType     = Categorical
                     Minimum      = Some 0.100
                     Maximum      = Some 5.000
@@ -101,6 +101,7 @@ let ``seriesDataToScript, when passed BoxPlot, returns the expected string`` () 
     BoxPlot
         [|
             {
+                Category = None
                 UpperWhisker = 1.234
                 BoxTop       = 2.345
                 Median       = 3.456
@@ -165,7 +166,7 @@ let ``toScript when passed a Chart returns the expected String`` () =
                             Color      = Some Color.Black
                         }
 
-                    AxisPosition = Top
+                    AxisPosition = TopAxis
                     TextColor    = Some Color.Orange
                     AxisType     = Categorical
                     Minimum      = Some 0.1
@@ -176,6 +177,8 @@ let ``toScript when passed a Chart returns the expected String`` () =
         YAxes = [| Axis.DefaultY |]
 
         Series = [||] // TODO
+
+        Legend = Legend.Default
     }
     |> Script.toScript
     |> String.split Environment.NewLine
@@ -205,15 +208,15 @@ open FSharp.Chart.OxyPlot
 
 let chart =
     {
-        Title    = { Value = "The title"; Font = Font.Default; Color = Color.Black }
-        Subtitle = { Value = "The subtitle"; Font = Font.Default; Color = Color.Black }
+        Title    = { Value = "The title"; Font = Font.Default; Color = Some Color.Black }
+        Subtitle = { Value = "The subtitle"; Font = Font.Default; Color = Some Color.Black }
 
         Background = Some (Color.FromArgb(1, 2, 3, 4))
         PlotAreaBackground = Some (Color.FromArgb(5, 6, 7, 8))
 
         XAxes = [| {
-                    AxisPosition = Top
-                    Title        = { Value = "Axis title"; Font = Font.Default; Color = Color.Black }
+                    AxisPosition = TopAxis
+                    Title        = { Value = "Axis title"; Font = Font.Default; Color = Some Color.Black }
                     TextColor    = Some Color.Orange
                     AxisType     = Categorical
                     Minimum      = Some 0.100

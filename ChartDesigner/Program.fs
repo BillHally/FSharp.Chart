@@ -41,12 +41,16 @@ let writeAllText = File.writeAllText showMessage
 [<STAThread>]
 [<EntryPoint>]
 let main argv =
-    WindowsConsole.attachToParentConsole () |> ignore
+    let attachedToParentConsole = WindowsConsole.attachToParentConsole ()
+
     let __ = Application()
     try
         Framework.RunApplication (Navigation.singleViewFromWindow MainWindow, Program.applicationCore (Script.export Dialogs.saveFile writeAllText))
         0
     with
     | ex ->
-        printfn "%A" ex
-        1
+        if attachedToParentConsole then
+            printfn "%A" ex
+            1
+        else
+            reraise ()

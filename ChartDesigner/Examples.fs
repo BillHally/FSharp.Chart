@@ -34,37 +34,66 @@ module Examples =
                     |]
         }
 
+    let colors =
+        [|
+            Color.AliceBlue
+            Color.LightBlue
+            Color.LightGreen
+            Color.LightPink
+            Color.LightCoral
+        |]
+
     let boxplot () =
         let text x = { Text.Default with Value = x }
 
-        let data =
-            [| 100.0..100.0..1000.0 |]
-            |> Array.map
+        let series =
+            [| 100.0..100.0..400.0 |]
+            |> Array.mapi
                 (
-                    fun x ->
-                        {
-                            UpperWhisker = x
-                            BoxTop       = x * 0.9
-                            Median       = x * 0.6
-                            Mean         = x * 0.5
-                            BoxBottom    = x * 0.4
-                            LowerWhisker = x * 0.3
-                            Outliers     = [| 0.2 * x; 0.25 * x; 1.2 * x; 1.25 * x |]
-                        }
+                    fun i x ->
+                        let data =
+                            [|
+                                {
+                                    Category     = Some "Category A"
+                                    UpperWhisker = x
+                                    BoxTop       = x * 0.9
+                                    Median       = x * 0.6
+                                    Mean         = x * 0.5
+                                    BoxBottom    = x * 0.4
+                                    LowerWhisker = x * 0.3
+                                    Outliers     = [| 0.2 * x; 0.25 * x; 1.2 * x; 1.25 * x |]
+                                }
+
+                                (
+                                    let x = x * 1.1
+
+                                    {
+                                        Category     = Some "Category B"
+                                        UpperWhisker = x
+                                        BoxTop       = x * 0.9
+                                        Median       = x * 0.6
+                                        Mean         = x * 0.5
+                                        BoxBottom    = x * 0.4
+                                        LowerWhisker = x * 0.3
+                                        Outliers     = [| 0.2 * x; 0.25 * x; 1.2 * x; 1.25 * x |]
+                                    }
+                                )
+                            |]
+
+                        { Series.BoxPlot data with Name = sprintf "Series %d" i; Color = Some colors.[i] }
                 )
 
         {
             Chart.Default with
                 Title = text "Boxplot"
 
-                Series = [| { Series.BoxPlot data with Color = Some Color.AliceBlue } |]
+                Series = series
 
                 XAxes =
                     [|
                         {
                             Axis.DefaultX with
-                                Minimum = Some  0.5
-                                Maximum = Some 10.5
+                                AxisType = Categorical
                         }
                     |]
 
@@ -72,8 +101,8 @@ module Examples =
                     [|
                         {
                             Axis.DefaultY with
-                                Minimum = Some    0.0
-                                Maximum = Some 1275.0
+                                Minimum = Some   0.0
+                                Maximum = Some 500.0
                         }
                     |]
         }
@@ -99,10 +128,11 @@ module Examples =
 
                 Series =
                     [|
-                        {
-                            Series.Column 1.0 (ColumnData [| for x in 1..10 do yield (if x % 2 = 0 then "Even" else "Odd"), float x |]) with
-                                Color = Some Color.Blue
-                        }
+                        { Series.Column 1.0 (ColumnData [| "Category A", 1.0 ; "Category B", 2.1   |]) with Name = "Series 1" }
+                        { Series.Column 1.0 (ColumnData [| "Category A", 1.05; "Category B", 1.9   |]) with Name = "Series 2" }
+                        { Series.Column 1.0 (ColumnData [| "Category A", 1.1 ; "Category B", 1.95  |]) with Name = "Series 3" }
+                        { Series.Column 1.0 (ColumnData [| "Category A", 1.2 ; "Category B", 2.15  |]) with Name = "Series 4" }
+                        { Series.Column 1.0 (ColumnData [| "Category A", 1.13; "Category B", 2.18  |]) with Name = "Series 5" }
                     |]
         }
 

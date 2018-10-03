@@ -91,6 +91,8 @@ type ColumnData private(data : NamedData) =
 
 type BoxPlotItem =
     {
+        Category     : Option<string>
+
         UpperWhisker : float
         BoxTop       : float
         Median       : float
@@ -102,10 +104,10 @@ type BoxPlotItem =
     }
 
 type AxisPosition =
-    | Left
-    | Right
-    | Bottom
-    | Top
+    | LeftAxis
+    | RightAxis
+    | BottomAxis
+    | TopAxis
 
 type FontStyle =
     | Normal
@@ -158,7 +160,7 @@ type Axis =
 
     static member DefaultX =
         {
-            AxisPosition = Bottom
+            AxisPosition = BottomAxis
             Title        = Text.Default
             TextColor    = None
             AxisType     = Linear
@@ -168,7 +170,7 @@ type Axis =
 
     static member DefaultY =
         {
-            AxisPosition = Left
+            AxisPosition = LeftAxis
             Title        = Text.Default
             TextColor    = None
             AxisType     = Linear
@@ -205,7 +207,35 @@ type Series =
     static member BoxPlot           x = { Series.Default with SeriesData = (BoxPlot      (x       )) }
     static member Column      width x = { Series.Default with SeriesData = (Column       (x, width)) }
     static member ErrorColumn width x = { Series.Default with SeriesData = (ErrorColumn  (x, width)) }
-    static member Scatter           x = { Series.Default with SeriesData = (Scatter x)               }
+    static member Scatter           x = { Series.Default with SeriesData = (Scatter       x        ) }
+
+type Position =
+    | LeftTop
+    | CenterTop
+    | RightTop
+    | RightCenter
+    | RightBottom
+    | CenterBottom
+    | LeftBottom
+    | LeftCenter
+
+type Location =
+    | Inside
+    | Outside
+
+type Legend =
+    {
+        Title    : Text
+        Position : Position
+        Location : Location
+    }
+
+    static member Default =
+        {
+            Title    = Text.Default
+            Position = RightCenter
+            Location = Outside
+        }
 
 type Chart =
     {
@@ -219,6 +249,8 @@ type Chart =
         YAxes : Axis[]
 
         Series : Series[]
+
+        Legend : Legend
     }
 
     static member Default =
@@ -232,18 +264,13 @@ type Chart =
             XAxes  = [||]
             YAxes  = [||]
             Series = [||]
+
+            Legend = Legend.Default
         }
 
 module NamedData =
-    let getCategories xs =
-        xs
-        |> Seq.collect
-            (
-                function
-                | NamedFloats xs ->
-                    xs
-                    |> Seq.map fst
-            )
-        |> Seq.sort
-        |> Seq.distinct
-        |> Array.ofSeq
+    let getCategories =
+        function
+        | NamedFloats xs ->
+            xs
+            |> Seq.map fst

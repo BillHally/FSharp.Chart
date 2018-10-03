@@ -159,7 +159,7 @@ let multipleSeriesDataToScript =
 let seriesToScript n (x : Series) =
     sprintf
         """{
-            Name       = \"%s\"
+            Name       = "%s"
             SeriesData = seriesData%d
             Color      = %s
             XAxisIndex = %d

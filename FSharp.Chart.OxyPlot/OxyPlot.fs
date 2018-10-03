@@ -16,10 +16,10 @@ module Color =
 module AxisPosition =
     let from =
         function
-        | AxisPosition.Bottom -> Axes.AxisPosition.Bottom
-        | AxisPosition.Left   -> Axes.AxisPosition.Left
-        | AxisPosition.Top    -> Axes.AxisPosition.Top
-        | AxisPosition.Right  -> Axes.AxisPosition.Right
+        | BottomAxis -> Axes.AxisPosition.Bottom
+        | LeftAxis   -> Axes.AxisPosition.Left
+        | TopAxis    -> Axes.AxisPosition.Top
+        | RightAxis  -> Axes.AxisPosition.Right
 
 module FontWeight =
     let from =
@@ -28,6 +28,33 @@ module FontWeight =
         | Normal -> FontWeights.Normal
         | Italic -> FontWeights.Normal // Italic is not supported by Oxyplot
 
+module LegendPosition =
+    let from =
+        function
+        | LeftTop      -> LegendPosition.TopLeft
+        | CenterTop    -> LegendPosition.TopCenter
+        | RightTop     -> LegendPosition.TopRight
+        | RightCenter  -> LegendPosition.RightMiddle
+        | RightBottom  -> LegendPosition.BottomRight
+        | CenterBottom -> LegendPosition.BottomCenter
+        | LeftBottom   -> LegendPosition.BottomLeft
+        | LeftCenter   -> LegendPosition.LeftMiddle
+
+module LegendPlacement =
+    let from =
+        function
+        | Inside  -> LegendPlacement.Inside
+        | Outside -> LegendPlacement.Outside
+
+module Legend =
+    let set (legend : Legend) (plotModel : PlotModel) =
+        plotModel.LegendTitle     <- legend.Title.Value
+        plotModel.LegendPosition  <- LegendPosition.from legend.Position
+        plotModel.LegendPlacement <- LegendPlacement.from legend.Location
+
+        plotModel.LegendFont <- legend.Title.Font.Name // Use "courier" if you want monospaced
+
+        
 module Axis =
     let from categories numberOfSeries (x : Axis) : Axes.Axis =
         let axis =
@@ -38,6 +65,7 @@ module Axis =
                 let axis = Axes.CategoryAxis()
                 categories |> Array.iter axis.ActualLabels.Add
                 axis.GapWidth <- 1.0 / float numberOfSeries
+                axis.IsTickCentered <- true
                 axis :> Axes.Axis
             | DateTime    -> Axes.DateTimeAxis() :> Axes.Axis
             | Linear      -> Axes.LinearAxis  () :> Axes.Axis
@@ -103,14 +131,16 @@ module Series =
             | TimeSpanDateTime xys -> xys |> Array.map (fun (x, y) -> OxyPlot.Series.ErrorColumnItem(Axes.TimeSpanAxis.ToDouble x, Axes.DateTimeAxis.ToDouble y))
             | TimeSpanTimeSpan xys -> xys |> Array.map (fun (x, y) -> OxyPlot.Series.ErrorColumnItem(Axes.TimeSpanAxis.ToDouble x, Axes.TimeSpanAxis.ToDouble y))
 
-    let private toBoxPlotItems (xs : BoxPlotItem[]) =
+    let private toBoxPlotItems numberOfSeries seriesIndex (xs : BoxPlotItem[]) =
+        let offset = - 0.5 + 1.0 / float numberOfSeries * (float seriesIndex + 0.5)
+
         xs
         |> Array.mapi
             (
                 fun i x ->
                     OxyPlot.Series.BoxPlotItem
                         (
-                            float (i + 1),
+                            float i + offset,
 
                             x.LowerWhisker,
                             x.BoxBottom,
@@ -128,8 +158,9 @@ module Series =
         let s = OxyPlot.Series.BarSeries(FillColor = color, BarWidth = width, ItemsSource = xs)
         s :> OxyPlot.Series.XYAxisSeries
 
-    let private boxplot color xs =
-        OxyPlot.Series.BoxPlotSeries(Fill = color, ItemsSource = xs)
+    let private boxplot numberOfSeries color xs =
+        let boxWidth = 0.8 * (1.0 / float numberOfSeries)
+        OxyPlot.Series.BoxPlotSeries(Fill = color, ItemsSource = xs, BoxWidth = boxWidth)
         :> OxyPlot.Series.XYAxisSeries
 
     let private column width color categories xs =
@@ -156,15 +187,15 @@ module Series =
         OxyPlot.Series.ScatterSeries(MarkerFill = color, ItemsSource = xs, DataFieldX = "X", DataFieldY = "Y")
         :> OxyPlot.Series.XYAxisSeries
 
-    let convert categories color x =
+    let convert categories color numberOfSeries seriesIndex x =
         match x with
-        | Bar         (data, width) -> bar         width color            (toFloats       data     )
-        | BoxPlot      data         -> boxplot           color            (toBoxPlotItems data     )
-        | ErrorColumn (data, width) -> errorColumn width color            (toErrorItems   data.Data)
-        | Scatter      data         -> scatter           color            (toDataPoints   data.Data)
-        | Column      (data, width) -> column      width color categories (toNamedFloats  data.Data)
+        | Bar         (data, width) -> bar         width          color            (toFloats                                  data     )
+        | BoxPlot      data         -> boxplot     numberOfSeries color            (toBoxPlotItems numberOfSeries seriesIndex data     )
+        | ErrorColumn (data, width) -> errorColumn width          color            (toErrorItems                              data.Data)
+        | Scatter      data         -> scatter                    color            (toDataPoints                              data.Data)
+        | Column      (data, width) -> column      width          color categories (toNamedFloats                             data.Data)
 
-    let from categories (xAxes : Axes.Axis[]) (yAxes : Axes.Axis[]) (x : Series) =
+    let from categories (xAxes : Axes.Axis[]) (yAxes : Axes.Axis[]) numberOfSeries seriesIndex (x : Series) =
 
         let ensureAxisKeys baseKey (axes : Axes.Axis[]) =
             axes |> Array.iteri (fun n axis -> if axis.Key = null then axis.Key <- sprintf "%s.%d" baseKey n)
@@ -172,7 +203,7 @@ module Series =
         ensureAxisKeys "X" xAxes
         ensureAxisKeys "Y" yAxes
 
-        let series = x.SeriesData |> convert categories (Color.from x.Color)
+        let series = x.SeriesData |> convert categories (Color.from x.Color) numberOfSeries seriesIndex
         series.Title <- x.Name
 
         if x.XAxisIndex >= 0 then series.XAxisKey <- xAxes.[x.XAxisIndex].Key
@@ -207,16 +238,21 @@ module PlotModel =
                     PlotAreaBackground = Color.from chart.PlotAreaBackground
                 )
 
+        plotModel |> Legend.set chart.Legend
+
         let categories =
             chart.Series
-            |> Array.choose
+            |> Seq.collect
                 (
                     fun series ->
                         match series.SeriesData with
-                        | Column (data, _) -> Some data.Data
-                        | _ -> None
+                        | Column (data, _) -> data.Data |> NamedData.getCategories
+                        | BoxPlot xs -> xs |> Seq.choose (fun x -> x.Category)
+                        | _ -> Seq.empty
                 )
-            |> NamedData.getCategories
+            |> Seq.sort
+            |> Seq.distinct
+            |> Array.ofSeq
 
         let numberOfSeries = chart.Series.Length
 
@@ -226,6 +262,13 @@ module PlotModel =
         let yAxes = chart.YAxes |> Array.map (Axis.from categories numberOfSeries) |> setPositionTiers
         yAxes |> Array.iter plotModel.Axes.Add
 
-        chart.Series |> Array.iter (Series.from categories xAxes yAxes >> plotModel.Series.Add)
+        chart.Series
+        |> Array.iteri
+            (
+                fun i x ->
+                    x
+                    |> Series.from categories xAxes yAxes numberOfSeries i
+                    |> plotModel.Series.Add
+            )
 
         plotModel
