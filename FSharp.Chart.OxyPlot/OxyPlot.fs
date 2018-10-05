@@ -273,7 +273,6 @@ module PlotModel =
                         | BoxPlot xs -> xs |> Seq.choose (fun x -> x.Category)
                         | _ -> Seq.empty
                 )
-            |> Seq.sort
             |> Seq.distinct
             |> Array.ofSeq
 
