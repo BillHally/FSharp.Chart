@@ -13,6 +13,7 @@ open OxyPlot
 
 open FSharp.Chart
 open FSharp.Chart.OxyPlot
+open OxyPlot.Wpf
 
 module Chart =
     let setPlotAreaBackground plotAreaBackground x =
@@ -33,6 +34,8 @@ type SeriesType =
     | ColumnSeries
     | ErrorColumnSeries
     | ScatterSeries
+    | AreaSeries
+    | LineSeries
 
     static member Items =
         [|
@@ -41,17 +44,21 @@ type SeriesType =
             ColumnSeries
             ErrorColumnSeries
             ScatterSeries
+            AreaSeries
+            LineSeries
         |]
 
 module Program =
 
     let getExample =
         function
-        |   BarSeries         -> Examples.bar         ()
-        |   BoxPlotSeries     -> Examples.boxplot     ()
-        |   ColumnSeries      -> Examples.column      ()
-        |   ErrorColumnSeries -> Examples.errorColumn ()
-        |   ScatterSeries     -> Examples.scatter     ()
+        | BarSeries         -> Examples.bar         ()
+        | BoxPlotSeries     -> Examples.boxplot     ()
+        | ColumnSeries      -> Examples.column      ()
+        | ErrorColumnSeries -> Examples.errorColumn ()
+        | ScatterSeries     -> Examples.scatter     ()
+        | AreaSeries        -> Examples.area        ()
+        | LineSeries        -> Examples.line        ()
 
     type Model =
         {

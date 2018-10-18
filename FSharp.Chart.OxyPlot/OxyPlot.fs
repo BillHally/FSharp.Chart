@@ -106,6 +106,18 @@ module Series =
         function
         | NamedFloats xs -> xs
 
+    let private tupleDataToDataPoints =
+        function
+        | FloatFloat       xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(                           x,                            y))
+        | FloatDateTime    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(                           x, Axes.DateTimeAxis.ToDouble y))
+        | FloatTimeSpan    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(                           x, Axes.TimeSpanAxis.ToDouble y))
+        | DateTimeFloat    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.DateTimeAxis.ToDouble x,                            y))
+        | DateTimeDateTime xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.DateTimeAxis.ToDouble x, Axes.DateTimeAxis.ToDouble y))
+        | DateTimeTimeSpan xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.DateTimeAxis.ToDouble x, Axes.TimeSpanAxis.ToDouble y))
+        | TimeSpanFloat    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.TimeSpanAxis.ToDouble x,                            y))
+        | TimeSpanDateTime xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.TimeSpanAxis.ToDouble x, Axes.DateTimeAxis.ToDouble y))
+        | TimeSpanTimeSpan xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.TimeSpanAxis.ToDouble x, Axes.TimeSpanAxis.ToDouble y))
+
     let private toDataPoints =
         function
         | Data1D        ys  -> ys |> toFloats |> Array.mapi (fun i y -> OxyPlot.DataPoint(float i, y))
@@ -113,17 +125,7 @@ module Series =
             let xs = xs |> toFloats
             let ys = ys |> toFloats
             xs |> Array.mapi (fun i x -> OxyPlot.DataPoint(x, ys.[i]))
-        | Data2D xys ->
-            match xys with
-            | FloatFloat       xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(                           x,                            y))
-            | FloatDateTime    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(                           x, Axes.DateTimeAxis.ToDouble y))
-            | FloatTimeSpan    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(                           x, Axes.TimeSpanAxis.ToDouble y))
-            | DateTimeFloat    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.DateTimeAxis.ToDouble x,                            y))
-            | DateTimeDateTime xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.DateTimeAxis.ToDouble x, Axes.DateTimeAxis.ToDouble y))
-            | DateTimeTimeSpan xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.DateTimeAxis.ToDouble x, Axes.TimeSpanAxis.ToDouble y))
-            | TimeSpanFloat    xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.TimeSpanAxis.ToDouble x,                            y))
-            | TimeSpanDateTime xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.TimeSpanAxis.ToDouble x, Axes.DateTimeAxis.ToDouble y))
-            | TimeSpanTimeSpan xys -> xys |> Array.map (fun (x, y) -> OxyPlot.DataPoint(Axes.TimeSpanAxis.ToDouble x, Axes.TimeSpanAxis.ToDouble y))
+        | Data2D xys -> tupleDataToDataPoints xys
 
     let private toErrorItems =
         function
@@ -176,6 +178,9 @@ module Series =
                         )
             )
 
+    let private toAreaPoints x = (tupleDataToDataPoints x.AreaTop, tupleDataToDataPoints x.AreaBottom)
+    let private toLinePoints = tupleDataToDataPoints
+
     let private bar width color xs =
         let xs = xs |> Array.map (fun value -> OxyPlot.Series.BarItem(value))
         let s = OxyPlot.Series.BarSeries(FillColor = color, BarWidth = width, ItemsSource = xs)
@@ -210,6 +215,17 @@ module Series =
         OxyPlot.Series.ScatterSeries(MarkerFill = color, ItemsSource = xs, DataFieldX = "X", DataFieldY = "Y")
         :> OxyPlot.Series.XYAxisSeries
 
+    let private area color (bottom : DataPoint[], top : DataPoint[]) =
+        let s = OxyPlot.Series.AreaSeries(Color = color)
+        s.Points.AddRange(bottom)
+        s.Points2.AddRange(top)
+        s :> OxyPlot.Series.XYAxisSeries
+
+    let private line color (xs : DataPoint[]) =
+        let s = OxyPlot.Series.LineSeries(Color = color)
+        s.Points.AddRange(xs)
+        s :> OxyPlot.Series.XYAxisSeries
+
     let convert categories color numberOfSeries seriesIndex x =
         match x with
         | Bar         (data, width) -> bar         width          color            (toFloats                                             data     )
@@ -217,6 +233,8 @@ module Series =
         | ErrorColumn (data, width) -> errorColumn width          color            (toErrorItems                                         data.Data)
         | Scatter      data         -> scatter                    color            (toDataPoints                                         data.Data)
         | Column      (data, width) -> column      width          color categories (toNamedFloats                                        data.Data)
+        | Area         data         -> area                       color            (toAreaPoints                                         data     )
+        | Line         data         -> line                       color            (toLinePoints                                         data     )
 
     let from categories (xAxes : Axes.Axis[]) (yAxes : Axes.Axis[]) numberOfSeries seriesIndex (x : Series) =
 

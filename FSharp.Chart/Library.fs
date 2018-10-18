@@ -103,6 +103,12 @@ type BoxPlotItem =
         Outliers : float[]
     }
 
+type AreaData =
+    {
+        AreaTop    : TupleData
+        AreaBottom : TupleData
+    }
+
 type AxisPosition =
     | LeftAxis
     | RightAxis
@@ -184,6 +190,8 @@ type SeriesData =
     | Column      of data : ColumnData * width : float
     | ErrorColumn of data : ErrorData  * width : float
     | Scatter     of data : ScatterData
+    | Area        of data : AreaData
+    | Line        of data : TupleData
 
 type Series =
     {
@@ -208,6 +216,8 @@ type Series =
     static member Column      width x = { Series.Default with SeriesData = (Column       (x, width)) }
     static member ErrorColumn width x = { Series.Default with SeriesData = (ErrorColumn  (x, width)) }
     static member Scatter           x = { Series.Default with SeriesData = (Scatter       x        ) }
+    static member Area              x = { Series.Default with SeriesData = (Area          x        ) }
+    static member Line              x = { Series.Default with SeriesData = (Line          x        ) }
 
 type Position =
     | LeftTop

@@ -147,6 +147,8 @@ let seriesDataToScript n seriesData =
     | Column      (simpleData, width) -> sprintf "Column (%A, %.2f)" simpleData width
     | ErrorColumn (errorData,  width) -> sprintf "ErrorColumn (%A, %.2f)" errorData width
     | Scatter     (scatterData      ) -> sprintf "Scatter %A" scatterData
+    | Area        (areaData         ) -> sprintf "Area %A" areaData
+    | Line        (lineData         ) -> sprintf "Line %A" lineData
     |> sprintf
         """let seriesData%d =
     %s"""

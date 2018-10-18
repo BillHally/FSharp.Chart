@@ -179,7 +179,54 @@ module Examples =
                     [|
                         {
                             Series.Scatter (ScatterData [| 2.5..5.0..97.5 |]) with
+                                Name = "Some scatter points"
                                 Color = Some Color.Red
+                        }
+                    |]
+        }
+
+    let area () =
+        let text x = { Text.Default with Value = x }
+
+        {
+            Chart.Default with
+                Title    = text "Title"
+                Subtitle = text "Subtitle"
+
+                XAxes = [| { Axis.DefaultX with Title = text "X axis" } |]
+                YAxes = [| { Axis.DefaultY with Title = text "Y axis" } |]
+
+                Series =
+                    [|
+                        {
+                            Series.Area
+                                {
+                                    AreaTop    = FloatFloat [| 1.0, 1.0; 2.0, 3.0; 3.0, 2.5 |]
+                                    AreaBottom = FloatFloat [| 1.0, 1.0; 2.5, 1.0; 2.8, 2.5 |]
+                                } with
+                                Name  = "An area"
+                                Color = Some Color.LightGreen
+                        }
+                    |]
+        }
+
+    let line () =
+        let text x = { Text.Default with Value = x }
+
+        {
+            Chart.Default with
+                Title    = text "Title"
+                Subtitle = text "Subtitle"
+
+                XAxes = [| { Axis.DefaultX with Title = text "X axis" } |]
+                YAxes = [| { Axis.DefaultY with Title = text "Y axis" } |]
+
+                Series =
+                    [|
+                        {
+                            Series.Line (FloatFloat [| 1.0, 2.0; 2.0, 3.0; 3.0, 2.5 |]) with
+                                Name  = "A line"
+                                Color = Some Color.PaleGoldenrod
                         }
                     |]
         }
